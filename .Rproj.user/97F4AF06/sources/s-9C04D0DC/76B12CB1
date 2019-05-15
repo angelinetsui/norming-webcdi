@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1557880844025.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "76B12CB1",
+    "lastKnownWriteTime" : 1557779987,
+    "last_content_update" : 1557779987,
+    "path" : "~/Desktop/norming_webcdi/analysis/preliminary.Rmd",
+    "project_path" : "analysis/preliminary.Rmd",
+    "properties" : {
+        "cursorPosition" : "22,42",
+        "last_setup_crc32" : "BE4FE65A87bbaee8",
+        "scrollLine" : "5",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

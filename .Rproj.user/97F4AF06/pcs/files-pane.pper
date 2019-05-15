@@ -1,0 +1,9 @@
+{
+    "path" : "~/Desktop/norming_webcdi/data/raw",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

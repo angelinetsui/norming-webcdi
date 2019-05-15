@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1557880852163.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E02ACE22",
+    "lastKnownWriteTime" : 1557770534,
+    "last_content_update" : 1557770534,
+    "path" : "~/Desktop/norming_webcdi/file_paths.R",
+    "project_path" : "file_paths.R",
+    "properties" : {
+        "cursorPosition" : "8,63",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
