@@ -23,3 +23,89 @@ library(fs)
 source(path(here::here(), "file_paths.R"))
 ```
 
+Reading in the data; basic visualizations to get an idea of the data.
+
+```{r}
+pilot_raw <- 
+  read_csv(pilot_1_data_path) 
+
+pilot_raw_wg <- 
+  pilot_raw %>% 
+  filter(form == 'WG', age <= 18)
+
+pilot_raw_wg %>% 
+  ggplot(aes(production)) +
+  geom_histogram()
+
+pilot_raw_wg %>% 
+  ggplot(aes(comprehension)) +
+  geom_histogram()
+
+pilot_raw_wg %>% 
+  ggplot(aes(production, comprehension, color = age)) +
+  geom_point(size = 0.8, alpha = 0.8) +
+  viridis::scale_color_viridis()
+
+pilot_raw_wg %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 2)
+
+pilot_raw_wg %>% 
+  ggplot(aes(age, production)) +
+  geom_jitter() +
+  labs(
+    title = "Early Childhood Vocabulary Production (MB-CDI Words and Gestures Form)"
+  )
+
+pilot_raw_wg %>% 
+  ggplot(aes(age, comprehension)) +
+  geom_jitter() +
+  labs(
+    title = "Early Childhood Vocabulary Comprehension\n(MB-CDI Words and Gestures Form)",
+    subtitle = "Heavy over-reporting evident in this measure"
+  )
+
+```
+
+There's a lot of over-reporting here. Let's dig in a little bit and see what is going on here.
+
+```{r}
+pilot_raw_wg %>% 
+  ggplot(aes(mother_education)) +
+  geom_density()
+
+wg_over_reporters <- 
+  pilot_raw_wg %>% 
+  mutate(over_report = age <= 16 & comprehension >= 300) %>% 
+  filter(over_report == TRUE)
+
+wg_over_reporters %>% 
+  ggplot(aes(mother_education)) +
+  geom_density()
+  
+```
+
+
+```{r}
+pilot_raw_ws <- 
+  pilot_raw %>% 
+  filter(form == "WS")
+
+pilot_raw_ws %>% 
+  ggplot(aes(production)) +
+  geom_histogram()
+
+pilot_raw_ws %>% 
+  ggplot(aes(age)) +
+  geom_histogram(binwidth = 2)
+
+pilot_raw_ws %>% 
+  ggplot(aes(age, production)) +
+  geom_jitter() +
+  labs(
+    title = "Early Childhood Vocabulary Production (MB-CDI Words and Sentences Form)"
+  ) +
+  geom_smooth(method = 'loess')
+
+```
+
