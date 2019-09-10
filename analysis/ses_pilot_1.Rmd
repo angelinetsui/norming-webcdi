@@ -1,0 +1,227 @@
+---
+title: "Analysis round 1"
+author: "Benny deMayo"
+date: "5/13/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(png)
+library(knitr)
+library(markdown)
+library(lmerTest)
+library(ggthemes)
+library(psych)
+library(magrittr)
+library(langcog)
+library(tidyboot)
+library(fs)
+
+source(path(here::here(), "file_paths.R"))
+```
+
+Our goal here is to take a look at data from the first (messy) pilot of web-CDI specifically aimed at non-white, lower-SES samples.
+
+First, we read in the data.
+
+```{r}
+ses_pilot_raw <- 
+  ses_pilot_directory %>% 
+  map_df(~read_csv(., col_types = cols(.default = col_character()))) %>% #read in columns as a character
+  mutate_at(
+    .funs = ~case_when(
+      str_detect(., "<") ~ 1, #get rid of entries that have 'less than' signs in them
+      TRUE ~ as.numeric(.)
+    ),
+    .vars = vars(contains("Percentile"))
+  ) %>% 
+  mutate_at(
+    .funs = ~as.numeric(.), #turn all the quantitative columns back into numeric
+    .vars = 
+      vars(
+        which(colnames(ses_pilot_raw) == "benchmark age"):ncol(ses_pilot_raw)
+      )
+  )
+```
+
+
+# WG - Words and Gestures
+
+## Facebook and MTurk data
+
+We start with the Words and Gestures measure.
+
+```{r}
+pilot_raw_wg <- 
+  pilot_raw %>% 
+  filter(form == 'WG', age <= 18) %>% 
+  #filter only words and gestures administrations
+  filter(str_detect(study_name, "Facebook") | 
+           #filter out only Fb and MTurk studies
+           str_detect(study_name, "MTurk")) %>%
+  mutate(over_report = age <= 16 & comprehension >= 300) 
+  #put in variable describing whether the administration was through Facebook   or MTurk
+
+pilot_raw_wg %>% 
+  ggplot(aes(production)) +
+  geom_histogram() +
+  labs(
+    title = "Number of words produced, Web-CDI WG Measure",
+    subtitle = "Only Facebook and MTurk studies represented;\nDistribution is heavily left-skewed",
+    x = "number of words produced"
+  )
+
+```
+
+Unsurprisingly, when we look at Words and Gestures administrations (which are targeted at a younger age range, generally 8 - 18 months) we see a high number of participants reporting very low levels of vocabulary production.
+
+```{r}
+pilot_raw_wg %>% 
+  ggplot(aes(comprehension)) +
+  geom_histogram() +
+  labs(
+    title = "Number of words comprehended, Web-CDI WG Measure",
+    x = "Number of words comprehended"
+  )
+```
+
+Conversely, the comprehension measure looks more bimodal.
+
+Let's look at how the two measures are related.
+
+```{r}
+pilot_raw_wg %>% 
+  ggplot(aes(production, comprehension, color = age)) +
+  geom_point(size = 0.8, alpha = 0.8) +
+  viridis::scale_color_viridis() +
+  geom_smooth(method = "loess")
+```
+
+Two main points to observe here:
+* There is a lot of over-reporting in the comprehension measure, as represented by the large amount of points at ceiling on the y-axis.
+* Even given this over-reporting, the two measures seem to be positively associated. The parents reporting very high production seem to be kind of throwing off the loess smoothing curve.
+
+Let's look at each of the measures -- production and comprehension -- by age.
+
+```{r}
+# pilot_raw_wg %>% 
+#   ggplot(aes(age)) +
+#   geom_histogram(binwidth = 2)
+
+pilot_raw_wg %>% 
+  ggplot(aes(age, production, col = data_source)) +
+  geom_jitter(width = .2, height = 0, alpha = 0.5) +
+  labs(
+    title = "Early Childhood Vocabulary Production by Age",
+    subtitle = "(MB-CDI Words and Gestures Form)"
+  )
+
+pilot_raw_wg %>% 
+  ggplot(aes(age, comprehension, col = data_source)) +
+  geom_jitter(width = .2, height = 0, alpha = 0.5) +
+  labs(
+    title = "Early Childhood Vocabulary Comprehension by Age",
+    subtitle = "(MB-CDI Words and Gestures Form)\nHeavy over-reporting evident in this measure"
+  )
+
+```
+
+Take-aways from these plots:
+* On the production measure, it looks like both Facebook and Mturk samples are behaving similarly, with many children at floor (which is unsurprising, given the age of the children).
+* It seems that the MTurk samples, which were taken before the Facebook samples, are performing worse on the comprehension measure, given that there is a higher volume of turquoise points at ceiling on the comprehension plot. In other words, MTurk samples contain more over-reporting.
+
+```{r}
+pilot_raw_wg %>% 
+  group_by(data_source, over_report) %>%
+  #count amount of respondents in each data-source/over-report group
+  count %>% 
+  #group by data source to get relative proportions within data sources
+  group_by(data_source) %>%
+  #calculate proportions of over-reporters within both groups
+  mutate(proportion = n / sum(n)) %>%
+  ggplot(aes(x = over_report, y = proportion)) +
+  geom_bar(stat = "identity") + 
+  facet_grid(.~data_source)
+
+```
+
+Here, we can see that there is a higher proportion of over-reporting in the MTurk samples than in the Facebook samples.
+
+Let's take a look at some characteristics of these over-reporters. We'll use maternal education as a proxy for SES, which may not work incredibly well.
+
+```{r}
+pilot_raw_wg %>% 
+  ggplot(aes(mother_education)) +
+  geom_histogram(binwidth = 1, aes(y = ..density..)) + 
+  geom_density(color = "red") +
+  facet_grid(data_source ~ over_report)
+
+```
+
+At least here, it doesn't look that there are huge qualitative SES differences between the over-reporters and those who reported reasonable results for their children.
+
+## Other people's data
+
+```{r}
+pilot_raw %>% 
+  filter(form == "WG",
+         !(str_detect(study_name, "Facebook")),
+         !(str_detect(study_name, "MTurk"))) %>%
+  mutate(over_report = age <= 16 & comprehension >= 300) %>%
+  ggplot(aes(age, comprehension)) +
+  geom_jitter(width = .2, height = 0)
+```
+
+
+# WS
+
+Now let's take a look at the Words and Sentences Measure, which only reports one result (production). Again, we'll only look at participants recruited through Facebook and MTurk.
+
+```{r}
+pilot_raw_ws <- 
+  pilot_raw %>% 
+  filter(form == "WS" & #look at only WS administrations
+           #take out only Facebook and MTurk studies
+           (str_detect(study_name, "Facebook") |
+              str_detect(study_name, "MTurk"))  )
+
+
+pilot_raw_ws %>% 
+  ggplot(aes(production)) +
+  geom_histogram() +
+  labs(
+    title = "Number of words produced, Web-CDI WS Measure",
+    subtitle = "Only Facebook and MTurk studies represented",
+    x = "number of words produced"
+  )
+
+# pilot_raw_ws %>% 
+#   ggplot(aes(age)) +
+#   geom_histogram(binwidth = 2)
+
+pilot_raw_ws %>% 
+  filter(age <= 31) %>% #cut off data at 31 months, because past there it's very sparse
+  ggplot(aes(age, production)) +
+  geom_jitter(aes(color = data_source),width = .2, height = 0, alpha = 0.5) +
+  labs(
+    title = "Early Childhood Vocabulary Production (MB-CDI WS Measure)"
+  ) +
+  geom_smooth(method = 'loess')
+
+```
+
+The Words and Sentences measure seems to be yielding less crazy results, although it is evident even from this relatively small sample that there is huge variablity in children's language production and parent reports thereof in this age range. There is a generally positive association between age and production as we would expect to see here. 
+
+## Other people's data
+
+```{r}
+pilot_raw %>% 
+  filter(form == "WS",
+         !(str_detect(study_name, "Facebook")),
+         !(str_detect(study_name, "MTurk"))) %>%
+  ggplot(aes(age, production)) +
+  geom_jitter(width = .2, height = 0)
+```

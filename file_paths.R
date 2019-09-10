@@ -8,3 +8,6 @@ project_root <- here::here()
 pilot_1_data_path <- 
   fs::path(project_root, "data", "raw", "webcdi_full_info.csv")
 
+ses_pilot_directory <- 
+  fs::dir_ls(path = path(project_root, "data", "raw", "ses_pilot_1"))
+
