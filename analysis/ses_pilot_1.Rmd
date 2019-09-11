@@ -23,9 +23,11 @@ library(fs)
 source(path(here::here(), "file_paths.R"))
 ```
 
+##Reading and wrangling
+
 Our goal here is to take a look at data from the first (messy) pilot of web-CDI specifically aimed at non-white, lower-SES samples.
 
-First, we read in the data.
+First, we read in the data and do some minor cleaning jobs to it.
 
 ```{r}
 ses_pilot_raw <- 
@@ -42,9 +44,59 @@ ses_pilot_raw <-
     .funs = ~as.numeric(.), #turn all the quantitative columns back into numeric
     .vars = 
       vars(
-        which(colnames(ses_pilot_raw) == "benchmark age"):ncol(ses_pilot_raw)
+        which(colnames(.) == "benchmark age"):ncol(.)
       )
+  ) %>% 
+  mutate( #get rid of brackets in ethnicity column
+    child_ethnicity = str_extract(child_ethnicity, ".*(?=\\])"),
+    child_ethnicity = str_extract(child_ethnicity, "(?<=\\[).*")
   )
+```
+
+###Filtering out participants
+
+####Exposure to a second language
+
+First, we filter out children whose parents report exposure to a language other than English for more than 16 hours per week.
+
+```{r}
+
+ses_pilot_raw <- 
+  ses_pilot_raw %>% 
+  mutate_at(
+    .vars = c("language_days_per_week", "language_hours_per_day"),
+    .funs = ~as.numeric(.)
+  ) %>% 
+  mutate(
+    language_hours_per_week = language_days_per_week * language_hours_per_day
+  ) %>% 
+  filter(is.na(language_hours_per_week) | language_hours_per_week <= 16)
+
+```
+
+Next, we filter out children who were both underweight at birth (<= 5 lbs 5 oz) and who were born prematurely (4 or more weeks before the due date).
+
+```{r}
+
+#ask about this to Mike because there should be a way to condense this code
+ses_pilot_raw <- 
+  ses_pilot_raw %>% 
+  mutate_at(
+    .vars = c("due_date_diff", "birth_weight_lb"),
+    .funs = ~as.numeric(.)
+  ) %>% 
+  mutate_at(
+    .vars = c("due_date_diff"),
+    .funs = ~case_when(
+      is.na(.) ~ 0, #turn non-NA's in this column into zeros
+      TRUE ~ .
+    )
+  ) %>% 
+  mutate(premature = due_date_diff >= 4 & birth_weight_lb < 5.5) %>% 
+  filter(premature == FALSE)
+  
+  
+
 ```
 
 
