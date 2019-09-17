@@ -23,121 +23,26 @@ library(fs)
 source(path(here::here(), "file_paths.R"))
 ```
 
-##Reading and wrangling
+Our goal here is to understand what is going on with the over-reporting in early pilots of the Web-CDI.
 
-Our goal here is to take a look at data from the first (messy) pilot of web-CDI specifically aimed at non-white, lower-SES samples.
-
-First, we read in the data and do some minor cleaning jobs to it.
+First, we read in the data.
 
 ```{r}
-ses_pilot_raw <- 
-  ses_pilot_directory %>% 
-  map_df(~read_csv(., col_types = cols(.default = col_character()))) %>% #read in columns as a character
-  mutate_at(
-    .funs = ~case_when(
-      str_detect(., "<") ~ 1, #get rid of entries that have 'less than' signs in them
-      TRUE ~ as.numeric(.)
-    ),
-    .vars = vars(contains("Percentile"))
-  ) %>% 
-  mutate_at(
-    .funs = ~as.numeric(.), #turn all the quantitative columns back into numeric
-    .vars = 
-      vars(
-        which(colnames(.) == "benchmark age"):ncol(.)
-      )
-  )
-  
-```
-
-###Filtering out participants
-
-####Exposure to a second language
-
-First, we filter out children whose parents report exposure to a language other than English for more than 16 hours per week.
-
-```{r}
-
-ses_pilot_raw <- 
-  ses_pilot_raw %>% 
-  mutate_at(
-    .vars = c("language_days_per_week", "language_hours_per_day"),
-    .funs = ~as.numeric(.)
-  ) %>% 
-  mutate(
-    language_hours_per_week = language_days_per_week * language_hours_per_day
-  ) %>% 
-  filter(is.na(language_hours_per_week) | language_hours_per_week <= 16)
-
-```
-
-Next, we filter out children who were both underweight at birth (<= 5 lbs 5 oz) and who were born prematurely (4 or more weeks before the due date).
-
-```{r}
-
-#ask about this to Mike because there should be a way to condense this code
-ses_pilot_raw <- 
-  ses_pilot_raw %>% 
-  mutate_at(
-    .vars = c("due_date_diff", "birth_weight_lb"),
-    .funs = ~as.numeric(.)
-  ) %>% 
-  mutate_at(
-    .vars = c("due_date_diff"),
-    .funs = ~case_when(
-      is.na(.) ~ 0, #turn non-NA's in this column into zeros
-      TRUE ~ .
-    )
-  ) %>% 
-  mutate(premature = due_date_diff >= 4 & birth_weight_lb < 5.5) %>% 
-  filter(premature == FALSE)
-
-```
-
-
-Create different columns for the different ethnicities.
-
-```{r}
-
-ses_pilot_raw <- 
-  ses_pilot_raw %>% 
-  mutate( #get rid of brackets in ethnicity column
-    child_ethnicity = str_replace_all(child_ethnicity, "[^[:upper:]]", "")
-  ) %>% 
-  mutate(
-    ethnicity_white = str_detect(child_ethnicity, "W"),
-    ethnicity_black = str_detect(child_ethnicity, "B"),
-    ethnicity_asian = str_detect(child_ethnicity, "A"),
-    ethnicity_native = str_detect(child_ethnicity, "N"),
-    ethnicity_other = str_detect(child_ethnicity, "O"),
-    ethnicity_mixed = str_length(child_ethnicity) > 1
-  )
-
-```
-
-
-```{r}
-ethnicity_demographics <- 
-  ses_pilot_raw %>% 
-  summarize_at(
-    .vars = vars(starts_with("ethnicity")),
-    .funs = ~ mean(., na.rm = TRUE)
-  ) %>% 
-  gather(key = "ethnicity", value = "proportion", everything()) %>% 
-  mutate(ethnicity = str_replace(ethnicity, "ethnicity_", ""))
-
-ethnicity_demographics %>% 
-  ggplot(aes(reorder(ethnicity, -proportion), proportion)) +
-  geom_col() +
-  labs(
-    x = "ethnicity"
-  )
+pilot_raw <- 
+  read_csv(pilot_1_data_path) %>% 
+  mutate(data_source = ifelse(
+    str_detect(study_name, "Facebook"), 
+    "Facebook", 
+    "MTurk"
+  ))
 ```
 
 
 # WG - Words and Gestures
 
 ## Facebook and MTurk data
+
+Here, we look specifically at pilots that were done through Facebook and MTurk, since there are many miscellaneous pilots in the raw data.
 
 We start with the Words and Gestures measure.
 
