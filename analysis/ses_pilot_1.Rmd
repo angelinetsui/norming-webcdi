@@ -118,6 +118,22 @@ ses_pilot_raw <-
     ethnicity_mixed = str_length(child_ethnicity) > 1
   )
 
+
+ses_pilot_ethnicity <- 
+  ses_pilot_raw %>% 
+  mutate( #get rid of brackets in ethnicity column
+    child_ethnicity = str_replace_all(child_ethnicity, "[^[:upper:]]", "")
+  ) %>%
+  mutate(
+    ethnicity = case_when(
+      str_length(child_ethnicity) > 1 ~ "mixed",
+      TRUE ~ child_ethnicity
+    )
+  ) %>% 
+  select(subject_id, child_ethnicity, ethnicity) %>% 
+  count(ethnicity) %>% 
+  mutate(prop = n / sum(n))
+
 ```
 
 
@@ -253,5 +269,32 @@ usa_map +
 ses_pilot_zips %>% 
   qmplot(x = mean_long, y = mean_lat)
  
+```
+
+
+```{r}
+#zip code data
+
+prefixes <- read_csv(zip_prefix_path)
+
+ses_pilot_prefixes <- 
+  ses_pilot_raw %>% 
+  mutate(zip_code = str_replace_all(zip_code, "[^[:digit:]]", "")) %>% 
+  mutate(zip_code = as.numeric(zip_code)) %>% 
+  select(subject_id, zip_code) %>%
+  left_join(
+    prefixes,
+    by = c("zip_code" = "prefix")
+  )
+
+state_breakdown <- 
+  ses_pilot_prefixes %>% 
+  count(state) 
+
+View(ses_pilot_prefixes %>% 
+  count(distribution_center, state) %>% 
+  arrange(-n))
+
+
 ```
 
