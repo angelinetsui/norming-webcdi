@@ -1,0 +1,42 @@
+study_name,subject_id,local_lab_id,repeat_num,administration_id,link,completed,completedBackgroundInfo,due_date,last_modified,created_date,age,sex,zip_code,birth_order,birth_weight_lb,birth_weight_kg,multi_birth_boolean,multi_birth,born_on_due_date,early_or_late,due_date_diff,mother_yob,mother_education,father_yob,father_education,annual_income,child_hispanic_latino,child_ethnicity,caregiver_info,other_languages_boolean,other_languages,language_from,language_days_per_week,language_hours_per_day,ear_infections_boolean,ear_infections,hearing_loss_boolean,hearing_loss,vision_problems_boolean,vision_problems,illnesses_boolean,illnesses,services_boolean,services,worried_boolean,worried,learning_disability_boolean,learning_disability,benchmark age,Total Produced,Total Produced Percentile-sex,Total Produced Percentile-both,How Children Use Words,Word Endings 1,Word Forms 1 Nouns,Word Forms 1 Verbs,Word Forms 2 Nouns,Word Forms 2 Verbs,Combining,Combining % yes answers at this age and sex,Complexity,Complexity Percentile-sex,Complexity Percentile-both,Combination Example 1,Combination Example 2,Combination Example 3
+norming_ws_11_19,474,,1,65625,http://webcdi.stanford.edu/form/fill/607696b27cd205837753b1e10a3b20e5dd29ee5680f64a74a5addcca291d09e8,TRUE,TRUE,2020-01-04 05:17:40.678581+00:00,2019-12-21 05:25:14.328027+00:00,2019-12-21 05:17:40.679882+00:00,20,Female,,4 (Fourth),8.5,,0,,0,,,1970,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,20,37,10,13,1,0,1,2,3,1,1,70,20,96,96,"Hello
+","Mama eat
+","I want out
+"
+norming_ws_11_19,482,,1,65633,http://webcdi.stanford.edu/form/fill/bbce60e531b31afaf955a1008b15648f3b0bf28eefdca9a8df5b0a59ff6ce254,TRUE,TRUE,2020-01-04 06:00:23.433105+00:00,2019-12-21 06:05:48.974207+00:00,2019-12-21 06:00:23.433647+00:00,23,Male,,1 (First),7.5,,0,,0,,,1979,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,23,49,9,7,1,0,3,3,2,2,0,96,8,85,80,"Baby cry
+","I love you
+","Wheres is 
+"
+norming_ws_11_19,486,,1,65637,http://webcdi.stanford.edu/form/fill/32b9fbe4bb1accfce0667f335c7c38d8f6dd5c8f1c27f8c5485ceb41cf983308,TRUE,TRUE,2020-01-04 06:15:01.003446+00:00,2019-12-21 06:23:53.988202+00:00,2019-12-21 06:15:01.003954+00:00,23,Male,,1 (First),7,,0,,0,,,1990,12 (High school graduate),,,25000-50000,,,"One or both parents and other caregiver(s) (e.g., grandparent)",0,,,,,0,,0,,0,,0,,0,,0,,0,,23,62,13,10,1,0,2,3,2,2,0,96,9,85,81,"Play this
+","Eat that ok
+","I want mommy
+"
+norming_ws_11_19,488,,1,65639,http://webcdi.stanford.edu/form/fill/9d93169c6647cbde1142dabacdc1abbede0bdb966b2fcb0677bdfbe6a7f4dbd4,TRUE,TRUE,2020-01-04 06:43:20.989898+00:00,2019-12-21 07:01:27.546506+00:00,2019-12-21 06:43:20.990412+00:00,20,Female,300**,1 (First),7.5,,0,,1,Late,1,1985,18 (Advanced degree),1978,16,125000-150000,FALSE,['A'],Two parents,1,['Chinese'],Both parents,7,4,0,,0,,0,,0,,0,,1,Not as many words as I'd like to see her know,0,,20,468,93,95,2,0,0,1,0,0,0,70,0,60,65,,,
+norming_ws_11_19,503,,1,65654,http://webcdi.stanford.edu/form/fill/56183791166f97ba071f938a3068087325cc886488053455e99e715b07e5714d,TRUE,TRUE,2020-01-04 11:52:55.069060+00:00,2019-12-21 12:15:41.296162+00:00,2019-12-21 11:52:55.069578+00:00,21,Male,303**,1 (First),10,,0,,0,,,1990,14,1987,16,25000-50000,FALSE,['B'],Two parents,0,,,,,0,,0,,0,He,0,,0,,1,He doesn't say many words for his age,1,"Father, autism spectrum disorder; brother, developmental disorder; mother, developmental disorder",21,35,11,9,1,0,0,0,0,0,0,73,2,82,77,"Choo choo
+","Thank you
+","All done
+"
+norming_ws_11_19,506,,1,65657,http://webcdi.stanford.edu/form/fill/a215b7cce1de5731f02964c21504a6e3c05056a14a443f08f3e6d71abee90d9d,TRUE,TRUE,2020-01-04 12:46:27.838549+00:00,2019-12-21 13:52:09.850583+00:00,2019-12-21 12:46:27.839052+00:00,26,Male,352**,2 (Second),7.5,,0,,0,,,1993,12 (High school graduate),1991,12,25000-50000,FALSE,['B'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,1,Sister,26,146,17,13,2,0,2,1,0,0,0,89,5,47,40,"Ma I want baa.
+","Niel come here.
+","Ma play?
+"
+norming_ws_11_19,559,,1,65710,http://webcdi.stanford.edu/form/fill/f7ca682207add209e386ae65859a03a5d6981d6ea8ff0dbe6922a3a7dc526835,TRUE,TRUE,2020-01-04 16:11:10.787210+00:00,2019-12-22 17:36:44.236768+00:00,2019-12-21 16:11:10.787705+00:00,23,Male,303**,1 (First),8,,0,,0,,,1985,20,1985,17,50000-75000,FALSE,['W'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,23,342,73,66,4,0,2,0,0,0,1,96,3,70,65,"Dada shoes on; Charlie shoes on.
+","Dada please more cracker.
+","Red car, open gate, through.
+"
+norming_ws_11_19,580,,1,65731,http://webcdi.stanford.edu/form/fill/243636766f260c03a0dc08b7e871ce6e3bad9aebb6e488b5240d6c09b5647c2c,TRUE,TRUE,2020-01-04 18:16:58.354900+00:00,2019-12-21 18:52:24.102303+00:00,2019-12-21 18:16:58.355384+00:00,28,Male,902**,2 (Second),6.5,,0,,1,Early,4,1993,12 (High school graduate),1993,12,25000-50000,FALSE,['B'],Two parents,1,['Spanish; Castilian'],School,5,8,0,,0,,0,,0,,0,,0,,0,,28,317,30,24,2,0,2,5,0,0,1,95,10,40,32,"Santa came to school
+","We went to park and slide
+","I don't want go I want to stay with my mom
+"
+norming_ws_11_19,587,,1,65739,http://webcdi.stanford.edu/form/fill/f85debac927542d72eb870c0008eaa6609da2cf11296ee2d6848cfbd13c310d1,TRUE,TRUE,2020-01-04 19:01:14.031278+00:00,2019-12-21 21:07:57.200096+00:00,2019-12-21 19:01:14.031787+00:00,27,Male,212**,2 (Second),8.5,,0,,1,Late,1,1977,12 (High school graduate),1985,18,75000-100000,FALSE,['W'],Two parents,1,['Italian'],Father,7,2,0,,0,,0,,0,,0,,0,,1,My older son (child's brother) has a speech delay. He only said 3-4 words until he was 30 months old. He is now 4.5 years old and continues to receive once/ week speech svcs at school.,27,212,21,17,5,0,1,2,1,0,1,92,3,35,25,"Go out Cosimo and daddy.
+","A green race car.
+","Cosimo push Baby Ray.
+"
+norming_ws_11_19,593,,1,65748,http://webcdi.stanford.edu/form/fill/22b4cf5f3886c3f9ded7538217d55ea009faf8777b7c1b1c79c0872fe0ae17c8,TRUE,TRUE,2020-01-04 19:34:27.672797+00:00,2019-12-21 19:54:04.451320+00:00,2019-12-21 19:34:27.673318+00:00,21,Male,701**,1 (First),8,,0,,1,Early,2,1992,18 (Advanced degree),1987,18,100000-125000,FALSE,['W'],Two parents,0,,,,,1,Tubes,0,,0,,0,,0,,0,,0,,21,124,45,38,3,0,1,0,0,0,1,73,2,82,77,"More cracker please
+","Help open
+","Bye bye mommy daddy
+"
+norming_ws_11_19,619,,1,65830,http://webcdi.stanford.edu/form/fill/655f3adcee071baa26fe1c7216465381bd7014906dd17d5dd942059293da6509,TRUE,TRUE,2020-01-04 23:03:05.650193+00:00,2019-12-21 23:16:04.088985+00:00,2019-12-21 23:03:05.651557+00:00,16,Male,,1 (First),8,,0,,0,,,1989,18 (Advanced degree),1985,16,125000-150000,FALSE,['W'],Two parents,0,,,,,1,Tubes,0,,0,,0,,0,,0,,0,,16,14,17,15,1,0,0,0,0,0,0,22,0,85,85,"Snack
+","Dog
+","Dada
+"

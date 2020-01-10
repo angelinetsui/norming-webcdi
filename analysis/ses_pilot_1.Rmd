@@ -118,6 +118,11 @@ ses_pilot_raw <-
     ethnicity_mixed = str_length(child_ethnicity) > 1
   )
 
+old_ethnicity_numbers <- 
+  tibble(
+    ethnicity = c("Asian", "Black", "Mixed", "White"),
+    `2007 manual` = c(.069, .105, .063, .733)
+  )
 
 ses_pilot_ethnicity <- 
   ses_pilot_raw %>% 
@@ -128,14 +133,46 @@ ses_pilot_ethnicity <-
     ethnicity = case_when(
       str_length(child_ethnicity) > 1 ~ "mixed",
       TRUE ~ child_ethnicity
+    ) %>% fct_recode(
+      Asian = "A",
+      Black = "B",
+      Mixed = "mixed",
+      White = "W"
     )
   ) %>% 
+  filter(ethnicity != "") %>% 
   select(subject_id, child_ethnicity, ethnicity) %>% 
   count(ethnicity) %>% 
-  mutate(prop = n / sum(n))
+  mutate(`Current study` = n / sum(n)) %>% 
+  left_join(
+    old_ethnicity_numbers,
+    by = c("ethnicity")
+  ) %>% 
+  pivot_longer(
+    cols = c(`Current study`, `2007 manual`),
+    names_to = "study",
+    values_to = "proportion"
+  )
+
+ses_pilot_ethnicity %>% 
+  ggplot(aes(ethnicity, proportion, fill = study)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Ethnicity",
+    y = "Proportion of respondents"
+  ) +
+  theme_few() +
+  theme(legend.title = element_blank()) 
+
 
 ```
 
+2007 numbers:
+White: 73.3
+Black: 10.5
+Asian: 6.9
+Mixed: 6.3
+(order them in this order)
 
 ```{r}
 
@@ -177,6 +214,64 @@ ses_pilot_raw <-
     }
   ) %>% 
   mutate(age = as.numeric(age))
+
+maternal_ed <- 
+  ses_pilot_raw %>% 
+  select(subject_id, mother_education) %>% 
+  mutate(
+    maternal_ed = case_when(
+      mother_education <= 11 ~ "Some high school or less",
+      mother_education == 12 ~ "High school diploma",
+      mother_education %in% seq.int(13, 15) ~ 
+        "Some college education",
+      mother_education >= 16 ~ "College diploma or more"
+    )
+  )
+
+old_props <- 
+  tibble(
+    maternal_ed = c(
+      "Some high school or less",
+      "High school diploma",
+      "Some college education",
+      "College diploma or more"
+    ),
+    `2007 manual` = c(.075, .2385, .248, .4385)
+  )
+
+maternal_ed %>% 
+  count(maternal_ed) %>% 
+  mutate(
+    `Current study` = n / sum(n)
+  ) %>% 
+  left_join(old_props, by = c("maternal_ed")) %>% 
+  select(-n) %>% 
+  pivot_longer(
+    cols = c("Current study", "2007 manual"), 
+    names_to = "Study type", 
+    values_to = "proportion"
+  ) %>% 
+  mutate(
+    maternal_ed = fct_relevel(
+      maternal_ed,
+      "Some high school or less",
+      "High school diploma",
+      "Some college education",
+      "College diploma or more"
+    )
+  ) %>% 
+  ggplot(aes(maternal_ed, proportion, fill = `Study type`)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Education Level",
+    y = "Proportion of respondents"
+  ) +
+  theme_few() +
+  theme(
+    legend.title = element_blank(),
+    axis.text.x = element_text(angle = 10, vjust = 0.9, hjust = 1, size = 8),
+    axis.title.x = element_text()
+  ) 
 ```
 
 

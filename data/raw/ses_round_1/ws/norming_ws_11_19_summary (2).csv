@@ -1,0 +1,52 @@
+study_name,subject_id,local_lab_id,repeat_num,administration_id,link,completed,completedBackgroundInfo,due_date,last_modified,created_date,age,sex,zip_code,birth_order,birth_weight_lb,birth_weight_kg,multi_birth_boolean,multi_birth,born_on_due_date,early_or_late,due_date_diff,mother_yob,mother_education,father_yob,father_education,annual_income,child_hispanic_latino,child_ethnicity,caregiver_info,other_languages_boolean,other_languages,language_from,language_days_per_week,language_hours_per_day,ear_infections_boolean,ear_infections,hearing_loss_boolean,hearing_loss,vision_problems_boolean,vision_problems,illnesses_boolean,illnesses,services_boolean,services,worried_boolean,worried,learning_disability_boolean,learning_disability,benchmark age,Total Produced,Total Produced Percentile-sex,Total Produced Percentile-both,How Children Use Words,Word Endings 1,Word Forms 1 Nouns,Word Forms 1 Verbs,Word Forms 2 Nouns,Word Forms 2 Verbs,Combining,Combining % yes answers at this age and sex,Complexity,Complexity Percentile-sex,Complexity Percentile-both,Combination Example 1,Combination Example 2,Combination Example 3
+norming_ws_11_19,461,,1,65612,http://webcdi.stanford.edu/form/fill/a925b34b1fc58d2e1f9251fb8044ab5955ae406cf3b0ad046ad58d55e5daaf37,TRUE,TRUE,2020-01-04 04:25:07.670697+00:00,2019-12-21 04:32:00.338661+00:00,2019-12-21 04:25:07.671204+00:00,24,Male,,1 (First),7,,0,,0,,,1988,10,,,<25000,FALSE,,One parent,0,,,,,0,,0,,0,,0,,0,,0,,0,,24,35,5,5,0,0,2,4,3,3,1,86,10,82,76,"Mama
+","Dada
+","Eat
+"
+norming_ws_11_19,463,,1,65614,http://webcdi.stanford.edu/form/fill/91409ba097dbe7af57e50931d13de07a398ac11b1ba13c236a3db8918febc20f,TRUE,TRUE,2020-01-04 04:32:46.480400+00:00,2019-12-21 04:37:20.170382+00:00,2019-12-21 04:32:46.480878+00:00,18,Female,,2 (Second),6.5,,0,,0,,,1985,16 (College graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,18,26,12,16,2,0,1,2,1,2,0,66,3,90,90,"Hi
+","Bye
+","Dada mama
+"
+norming_ws_11_19,474,,1,65625,http://webcdi.stanford.edu/form/fill/607696b27cd205837753b1e10a3b20e5dd29ee5680f64a74a5addcca291d09e8,TRUE,TRUE,2020-01-04 05:17:40.678581+00:00,2019-12-21 05:25:14.328027+00:00,2019-12-21 05:17:40.679882+00:00,20,Female,,4 (Fourth),8.5,,0,,0,,,1970,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,20,37,10,13,1,0,1,2,3,1,1,70,20,96,96,"Hello
+","Mama eat
+","I want out
+"
+norming_ws_11_19,475,,1,65626,http://webcdi.stanford.edu/form/fill/de6873a7e66f584b9b9ff1b4efc8a70026858e8ab23394eaf2d0b7f677b01957,TRUE,TRUE,2020-01-04 05:29:14.683279+00:00,2019-12-21 05:51:41.313934+00:00,2019-12-21 05:29:14.683780+00:00,23,Male,,4 (Fourth),5.5,,0,,0,,,1988,12 (High school graduate),,,50000-75000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,23,54,11,8,0,0,1,3,2,2,0,96,10,86,83,"Lets go
+","Mama do
+","Eat this
+"
+norming_ws_11_19,481,,1,65632,http://webcdi.stanford.edu/form/fill/670f176c9c996170f9aeecdd64b927e85bd4b2b32b426da9839dd6170d63794c,TRUE,TRUE,2020-01-04 05:59:37.458610+00:00,2019-12-21 06:23:30.847601+00:00,2019-12-21 05:59:37.459110+00:00,29,Female,,1 (First),7.5,,0,,0,,,1991,16 (College graduate),1990,16,50000-75000,FALSE,['W'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,29,315,16,19,3,0,3,8,6,7,1,97,10,21,26,"Yay, I did it!
+","No, Papa come get me!
+","Mommy, I got go pee pee potty.
+"
+norming_ws_11_19,482,,1,65633,http://webcdi.stanford.edu/form/fill/bbce60e531b31afaf955a1008b15648f3b0bf28eefdca9a8df5b0a59ff6ce254,TRUE,TRUE,2020-01-04 06:00:23.433105+00:00,2019-12-21 06:05:48.974207+00:00,2019-12-21 06:00:23.433647+00:00,23,Male,,1 (First),7.5,,0,,0,,,1979,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,23,49,9,7,1,0,3,3,2,2,0,96,8,85,80,"Baby cry
+","I love you
+","Wheres is 
+"
+norming_ws_11_19,488,,1,65639,http://webcdi.stanford.edu/form/fill/9d93169c6647cbde1142dabacdc1abbede0bdb966b2fcb0677bdfbe6a7f4dbd4,TRUE,TRUE,2020-01-04 06:43:20.989898+00:00,2019-12-21 07:01:27.546506+00:00,2019-12-21 06:43:20.990412+00:00,20,Female,300**,1 (First),7.5,,0,,1,Late,1,1985,18 (Advanced degree),1978,16,125000-150000,FALSE,['A'],Two parents,1,['Chinese'],Both parents,7,4,0,,0,,0,,0,,0,,1,Not as many words as I'd like to see her know,0,,20,468,93,95,2,0,0,1,0,0,0,70,0,60,65,,,
+norming_ws_11_19,489,,1,65640,http://webcdi.stanford.edu/form/fill/cd4b7f31e700505eefab9017da63875a8962673eecae80c0cf54506b715450f9,TRUE,TRUE,2020-01-04 06:44:23.789577+00:00,2019-12-21 07:17:50.071543+00:00,2019-12-21 06:44:23.790079+00:00,29,Male,,1 (First),6,,0,,1,Early,1,1991,18 (Advanced degree),1990,16,50000-75000,FALSE,"['B', 'O']","One or both parents and other caregiver(s) (e.g., grandparent)",0,,,,,0,,0,,0,,0,,0,,0,,0,,29,341,27,22,4,0,2,3,2,0,1,100,13,38,30,"I am cooking, mummy
+","What are you doing mummy? 
+","Daddy working? 
+"
+norming_ws_11_19,506,,1,65657,http://webcdi.stanford.edu/form/fill/a215b7cce1de5731f02964c21504a6e3c05056a14a443f08f3e6d71abee90d9d,TRUE,TRUE,2020-01-04 12:46:27.838549+00:00,2019-12-21 13:52:09.850583+00:00,2019-12-21 12:46:27.839052+00:00,26,Male,352**,2 (Second),7.5,,0,,0,,,1993,12 (High school graduate),1991,12,25000-50000,FALSE,['B'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,1,Sister,26,146,17,13,2,0,2,1,0,0,0,89,5,47,40,"Ma I want baa.
+","Niel come here.
+","Ma play?
+"
+norming_ws_11_19,519,,1,65670,http://webcdi.stanford.edu/form/fill/a1f6618829390cdc047cbc9f6dc2f5b732ff500d15b3cc1c3b205b09d61446f0,TRUE,TRUE,2020-01-04 13:14:40.961607+00:00,2019-12-21 13:49:04.083072+00:00,2019-12-21 13:14:40.962969+00:00,22,Male,302**,1 (First),7.5,,0,,1,Late,1,1991,18 (Advanced degree),1988,14,100000-125000,FALSE,['W'],Two parents,0,,,,,1,"Only 2 infections, but severe and suspected ""glue ear"" was impeding hearing or would end up doing so. He got tubes at 15 months which greatly improved his condition  and babble talking.",0,,0,,0,,0,,0,,0,,22,105,32,26,4,0,0,0,1,0,1,73,0,55,45,"What you doing
+","Love you
+","Where cow
+"
+norming_ws_11_19,585,,1,65736,http://webcdi.stanford.edu/form/fill/8dd6c4d42566d32477af69473cc7757a12bf8448499dfad1b85bcb047f359e35,TRUE,TRUE,2020-01-04 18:43:39.263900+00:00,2019-12-21 19:12:10.771583+00:00,2019-12-21 18:43:39.264386+00:00,21,Male,701**,1 (First),9.5,,0,,0,,,1995,16 (College graduate),1992,16,25000-50000,FALSE,['W'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,21,242,71,65,4,0,2,4,0,0,1,73,9,90,90,"She's calling me
+","I love milk
+","I gotta go potty
+"
+norming_ws_11_19,590,,1,65745,http://webcdi.stanford.edu/form/fill/29855b928ec2d381e0604748e6013a9426bc3cd3f1d0338843d7a95b8f9edb5f,TRUE,TRUE,2020-01-04 19:15:35.838753+00:00,2019-12-21 19:43:48.117114+00:00,2019-12-21 19:15:35.839256+00:00,16,Female,300**,5 (Fifth),5,,0,,0,,,1995,12 (High school graduate),1993,12,25000-50000,FALSE,['B'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,16,106,70,74,0,0,2,3,6,2,0,35,0,85,85,"I ate cereal today
+",,
+norming_ws_11_19,628,,1,65991,http://webcdi.stanford.edu/form/fill/5d5c29803669ee2a9b9fe1b7aeccd9376e00e8c35e14a8ef75a47c41e68c972b,TRUE,TRUE,2020-01-05 04:41:01.723941+00:00,2019-12-22 04:59:42.154870+00:00,2019-12-22 04:41:01.724455+00:00,17,Male,,1 (First),6.5,,0,,0,,,1993,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,17,10,7,6,0,0,1,2,0,0,0,33,0,85,85,,,
+norming_ws_11_19,629,,1,66002,http://webcdi.stanford.edu/form/fill/8fc023b58446f846d35158b82319523901fe5eb422f745ae69933356d250febb,TRUE,TRUE,2020-01-05 05:01:21.483906+00:00,2019-12-22 05:06:20.429109+00:00,2019-12-22 05:01:21.484390+00:00,21,Male,,1 (First),7.5,,0,,0,,,1988,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,21,12,3,2,0,0,0,1,1,0,0,73,29,99,98,,,
+norming_ws_11_19,631,,1,66006,http://webcdi.stanford.edu/form/fill/95d697b31bf6a5d565d456fd07fe55e082f3ba283b23610b1a9b1baffd1f3648,TRUE,TRUE,2020-01-05 05:13:35.208900+00:00,2019-12-22 05:19:13.158878+00:00,2019-12-22 05:13:35.209412+00:00,18,Male,,1 (First),7,,0,,0,,,1985,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,18,8,5,5,0,0,1,0,1,1,0,44,3,90,90,,,
+norming_ws_11_19,632,,1,66010,http://webcdi.stanford.edu/form/fill/0391c3f59c54411f22bef7d1a3c63494ac4f3e7d0ef59cfd865205ee3cb73224,TRUE,TRUE,2020-01-05 05:20:12.664876+00:00,2019-12-22 05:30:04.264845+00:00,2019-12-22 05:20:12.665412+00:00,22,Male,,1 (First),6.5,,0,,0,,,1990,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,22,5,1,<1,0,0,1,0,0,0,1,73,1,65,60,,,
+norming_ws_11_19,635,,1,66028,http://webcdi.stanford.edu/form/fill/97a109eb41161172267561cd27ea0d9bf76368d4e7825fb5522f7da23e1acc81,TRUE,TRUE,2020-01-05 06:12:16.660665+00:00,2019-12-22 06:18:10.409475+00:00,2019-12-22 06:12:16.661167+00:00,20,Male,,3 (Third),6.5,,0,,0,,,1960,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,20,28,11,9,4,0,1,0,2,1,1,68,4,90,88,,,
+norming_ws_11_19,636,,1,66029,http://webcdi.stanford.edu/form/fill/bb4af2037075032fd1fc6c727b9f4754abe0a1377508efefb8bfb921538a412c,TRUE,TRUE,2020-01-05 06:20:02.792647+00:00,2019-12-22 06:26:15.516542+00:00,2019-12-22 06:20:02.793210+00:00,23,Male,,1 (First),7,,0,,0,,,1990,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,23,23,4,3,4,0,1,0,1,0,0,96,1,55,50,,,
+norming_ws_11_19,638,,1,66033,http://webcdi.stanford.edu/form/fill/658c27ed12d966b29a0532093134fa27a86ccc76746f24963b026c587e9bb6be,TRUE,TRUE,2020-01-05 06:31:19.803635+00:00,2019-12-22 06:35:11.694031+00:00,2019-12-22 06:31:19.804167+00:00,22,Male,,3 (Third),7,,0,,0,,,1988,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,22,12,2,2,0,0,0,0,0,0,1,73,0,55,45,,,
+norming_ws_11_19,640,,1,66035,http://webcdi.stanford.edu/form/fill/fa0b9d74efa149a7487a0989f712cfd6d3094c6c6eacd93ea14ec1560e31f2d0,TRUE,TRUE,2020-01-05 06:36:57.893602+00:00,2019-12-22 06:41:25.736564+00:00,2019-12-22 06:36:57.894120+00:00,22,Male,,1 (First),6.5,,0,,0,,,1986,12 (High school graduate),,,<25000,,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,22,11,2,1,0,0,0,1,0,0,1,73,0,55,45,,,
