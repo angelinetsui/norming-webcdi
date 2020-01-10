@@ -14,3 +14,9 @@ ses_pilot_directory <-
 zip_code_path <- fs::path(project_root, "data", "zip_codes.csv")
 
 zip_prefix_path <- fs::path(project_root, "data", "zip_prefixes.csv")
+
+ses_round_1_ws_path <- 
+  fs::dir_ls(path = path(project_root, "data", "raw", "ses_round_1", "ws"))
+
+ses_round_1_wg_path <- 
+  fs::dir_ls(path = path(project_root, "data", "raw", "ses_round_1", "wg"))

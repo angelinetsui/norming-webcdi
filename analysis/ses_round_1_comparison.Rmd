@@ -1,0 +1,58 @@
+---
+title: "SES Round 1 (not pilot)"
+author: "Benny deMayo"
+date: "1/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(png)
+library(knitr)
+library(markdown)
+library(lmerTest)
+library(ggthemes)
+library(psych)
+library(magrittr)
+library(langcog)
+library(tidyboot)
+library(fs)
+library(zipcode)
+library(ggmap)
+
+source(path(here::here(), "file_paths.R"))
+```
+
+Our aim here is to take a closer look at the data obtained in the latest round of WebCDI data collection. We will specifically be conmparing this batch to the initial data we collected when first using Facebook to diversify the sample. This code will have a lot of unnecessary redundancy with `ses_pilot_1.Rmd` but everyone will just have to deal with it.
+
+```{r}
+#accepts: path to directory of WebCDI summary score files
+#returns: aggregated cleaned data
+readInWebCDI <- function(directory) {
+  clean_data <- 
+    directory %>% 
+    map_df(~read_csv(., col_types = cols(.default = col_character()))) %>% #read in columns as a character
+    mutate_at(
+      .funs = ~case_when(
+        str_detect(., "<") ~ 1, #get rid of entries that have 'less than' signs in them
+        TRUE ~ as.numeric(.)
+      ),
+      .vars = vars(contains("Percentile"))
+    ) %>% 
+    mutate_at(
+      .funs = ~as.numeric(.), #turn all the quantitative columns back into numeric
+      .vars = 
+       vars(
+          which(colnames(.) == "benchmark age"):ncol(.)
+        )
+    )
+    return(clean_data)
+}
+
+ses_pilot_raw <- readInWebCDI(ses_pilot_directory)
+ses_round_1_wg <- readInWebCDI(ses_round_1_wg_path)
+
+```
+

@@ -50,8 +50,8 @@ ses_pilot_raw <-
       )
   )
 
-ses_pilot_raw %>% 
-  count(child_hispanic_latino)
+
+
   
 ```
 
