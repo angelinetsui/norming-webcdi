@@ -21,6 +21,7 @@ library(tidyboot)
 library(fs)
 library(zipcode)
 library(ggmap)
+library(lubridate)
 
 source(path(here::here(), "file_paths.R"))
 ```
@@ -53,6 +54,112 @@ readInWebCDI <- function(directory) {
 
 ses_pilot_raw <- readInWebCDI(ses_pilot_directory)
 ses_round_1_wg <- readInWebCDI(ses_round_1_wg_path)
+ses_round_1_ws <- readInWebCDI(ses_round_1_ws_path)
 
 ```
+
+Great, now the data is read in. We need to filter out participants now based on several criteria: birth weight, exposure to languages other than English, people who did the study too quickly.
+
+First let's do the kids who were born prematurely or underweight:
+
+```{r}
+
+filterMultilingual <- function(data) {
+  clean_data <- 
+    data %>% 
+    mutate_at(
+      .vars = c("due_date_diff", "birth_weight_lb"),
+      .funs = ~as.numeric(.)
+    ) %>% 
+    mutate_at(
+      .vars = c("due_date_diff"),
+      .funs = ~case_when(
+        is.na(.) ~ 0, #turn non-NA's in this column into zeros
+        TRUE ~ .
+      )
+    ) %>% 
+    mutate(premature = due_date_diff >= 4 & birth_weight_lb < 5.5) %>% 
+    filter(premature == FALSE)
+  
+  return(clean_data)
+}
+
+ses_pilot_raw <- ses_pilot_raw %>% filterMultilingual()
+ses_round_1_wg <- ses_round_1_wg %>% filterMultilingual()
+ses_round_1_ws <- ses_round_1_ws %>% filterMultilingual()
+
+```
+
+Now let's do kids who got a lot of exposure to languages other than English:
+
+```{r}
+
+filterMultilingual <- function(data) {
+  clean_data <- 
+    data %>% 
+    mutate_at(
+      .vars = c("language_days_per_week", "language_hours_per_day"),
+      .funs = ~as.numeric(.)
+    ) %>% 
+    mutate(
+      language_hours_per_week = language_days_per_week * language_hours_per_day
+    ) %>% 
+    filter(is.na(language_hours_per_week) | language_hours_per_week <= 16)
+}
+
+ses_pilot_raw <- ses_pilot_raw %>% filterMultilingual()
+ses_round_1_wg <- ses_round_1_wg %>% filterMultilingual()
+ses_round_1_ws <- ses_round_1_ws %>% filterMultilingual()
+
+
+```
+
+
+Now let's take care of the issue that some parents filled out the survey way too fast.
+
+```{r}
+
+ses_round_1_wg %>% 
+  mutate(
+    completion_interval = lubridate::interval(created_date, last_modified),
+    completion_time = completion_interval / lubridate::minutes()
+  )
+
+getCompletionInterval <- function(data) {
+  clean_data <- 
+    data %>% 
+    mutate(
+      completion_interval = lubridate::interval(created_date, last_modified),
+      completion_time = completion_interval / lubridate::minutes()
+    )
+  
+  return(clean_data)
+}
+
+ses_round_1_wg <- ses_round_1_wg %>% getCompletionInterval
+ses_round_1_ws <- ses_round_1_ws %>% getCompletionInterval
+
+completion_times_round_1 <- 
+  rbind(
+    ses_round_1_wg %>% 
+      select(study_name, subject_id, completion_time) %>% 
+      mutate(study_name = "wg"),
+    ses_round_1_ws %>% 
+      select(study_name, subject_id, completion_time) %>% 
+      mutate(study_name = "ws")
+  ) 
+
+completion_times_round_1 %>% 
+  ggplot(aes(completion_time)) +
+  geom_histogram(position = "dodge", binwidth = 5) +
+  facet_wrap(~study_name) +
+  coord_cartesian(xlim = c(0, 60)) +
+  scale_x_continuous(breaks = seq(0, 60, 3))
+
+
+
+```
+
+Well, that looks like a problem...
+
 
