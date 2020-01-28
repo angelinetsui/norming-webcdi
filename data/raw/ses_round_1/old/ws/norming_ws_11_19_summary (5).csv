@@ -1,0 +1,34 @@
+study_name,subject_id,local_lab_id,repeat_num,administration_id,link,completed,completedBackgroundInfo,due_date,last_modified,created_date,age,sex,zip_code,birth_order,birth_weight_lb,birth_weight_kg,multi_birth_boolean,multi_birth,born_on_due_date,early_or_late,due_date_diff,mother_yob,mother_education,father_yob,father_education,annual_income,child_hispanic_latino,child_ethnicity,caregiver_info,other_languages_boolean,other_languages,language_from,language_days_per_week,language_hours_per_day,ear_infections_boolean,ear_infections,hearing_loss_boolean,hearing_loss,vision_problems_boolean,vision_problems,illnesses_boolean,illnesses,services_boolean,services,worried_boolean,worried,learning_disability_boolean,learning_disability,benchmark age,Total Produced,Total Produced Percentile-sex,Total Produced Percentile-both,How Children Use Words,Word Endings 1,Word Forms 1 Nouns,Word Forms 1 Verbs,Word Forms 2 Nouns,Word Forms 2 Verbs,Combining,Combining % yes answers at this age and sex,Complexity,Complexity Percentile-sex,Complexity Percentile-both,Combination Example 1,Combination Example 2,Combination Example 3
+norming_ws_11_19,81,,1,63992,http://webcdi.stanford.edu/form/fill/ce4db08abb9fbf511be1655f8ee0d696d4a709dce618e4a7104a81ad4623d5dd,TRUE,TRUE,2019-11-27 20:09:53.010135+00:00,2019-11-13 20:57:21.415194+00:00,2019-11-13 20:09:53.010714+00:00,27,Female,212**,1 (First),8,,0,,0,,,1973,16 (College graduate),1981,18,50000-75000,FALSE,['W'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,27,317,25,31,5,0,2,1,0,0,1,96,15,40,50,"Dog dancing ""tutti fruity"" at Oma's house.
+","Go to Mom's and Sweetside and playground.
+","Dada at Whole Foods making pizza for the people.
+"
+norming_ws_11_19,82,,1,63998,http://webcdi.stanford.edu/form/fill/c46172cfbdb56e02e34e7df0bd984d20941c05820c311c6e4bfdd783c440f38d,TRUE,TRUE,2019-11-27 21:50:38.005639+00:00,2019-11-13 22:05:56.636322+00:00,2019-11-13 21:50:38.006190+00:00,16,Female,210**,1 (First),9,,0,,1,Late,1,1984,18 (Advanced degree),1981,18,175000-200000,FALSE,['W'],Two parents,0,,,,,0,,0,,0,,0,,0,,1,I am concerned that she is not saying many complete words.,0,,16,42,35,44,4,0,0,0,0,0,1,35,0,85,85,"more please
+","help me
+",
+norming_ws_11_19,437,,1,65588,http://webcdi.stanford.edu/form/fill/8427467035131d6cc94ef2db19e8d31088bc0afc3312b6104a936dd1ddfbac31,TRUE,TRUE,2020-01-04 03:20:37.907045+00:00,2019-12-21 03:34:04.095892+00:00,2019-12-21 03:20:37.908288+00:00,26,Male,,1 (First),6,,0,,0,,,Prefer not to disclose,12 (High school graduate),1990,12,25000-50000,FALSE,['B'],Two parents,0,,,,,1,No,0,,0,,0,,0,,0,,0,,26,63,5,5,0,0,0,0,0,0,0,89,0,20,15,"Feed the dog
+","I want food
+","I love you
+"
+norming_ws_11_19,449,,1,65600,http://webcdi.stanford.edu/form/fill/893243c04644af566d6f9e35ca6dfcfbe124c0def606244e49c23733df7259e0,TRUE,TRUE,2020-01-04 03:41:40.101780+00:00,2019-12-21 04:09:37.635483+00:00,2019-12-21 03:41:40.102295+00:00,21,Female,946**,1 (First),7,,0,,1,Early,1,1986,12 (High school graduate),1985,11,<25000,TRUE,['W'],Two parents,1,,Both parents,7,12,0,,0,,0,,0,,0,,0,,1,Mother's youngest sister,21,202,49,57,2,0,1,2,3,0,0,73,13,91,92,"Estrella be quiet.
+","Jadis yum yum.
+","Auntie let's go. Tía vámonos.
+"
+norming_ws_11_19,456,,1,65607,http://webcdi.stanford.edu/form/fill/bd32838d7d2a3eef3a8e59dda4ebdc6244bacd38af92359b386c2e2e2da3f1bc,TRUE,TRUE,2020-01-04 04:15:18.114734+00:00,2019-12-21 04:40:26.918151+00:00,2019-12-21 04:15:18.115883+00:00,21,Female,300**,2 (Second),6.5,,0,,0,,,1984,16 (College graduate),1983,18,125000-150000,FALSE,"['N', 'A']",Two parents,1,,Parents,7,24,0,,0,,0,,0,,0,,0,,0,,21,81,20,25,2,0,1,0,0,0,0,73,0,50,55,"Where is thumbkin
+","Are you sleeping
+","Mumma need food
+"
+norming_ws_11_19,466,,1,65617,http://webcdi.stanford.edu/form/fill/c87a976b6bf23197a2573c12367fd10587530adaa21aabaee9c5806dc5e7defc,TRUE,TRUE,2020-01-04 04:49:47.986941+00:00,2019-12-21 04:54:29.504080+00:00,2019-12-21 04:49:47.987445+00:00,18,Male,,3 (Third),7.5,,0,,0,,,1980,12 (High school graduate),,,25000-50000,FALSE,,Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,18,23,17,14,0,0,1,1,1,1,0,44,1,87,85,"Mama
+","Daddy
+","Love you
+"
+norming_ws_11_19,468,,1,65619,http://webcdi.stanford.edu/form/fill/c7dc6fe6f6a305cadb3e9af26657c15fff869014da3648a9a6d2e74483b8c727,TRUE,TRUE,2020-01-04 05:00:13.076806+00:00,2019-12-21 05:05:05.983448+00:00,2019-12-21 05:00:13.078149+00:00,22,Male,,1 (First),8,,0,,0,,,1992,14,,,50000-75000,,,"One or both parents and other caregiver(s) (e.g., grandparent)",0,,,,,0,,0,,0,,0,,0,,0,,0,,22,25,5,5,1,0,1,1,1,1,0,73,5,85,80,"Lets go
+","Hi mommy
+","See you
+"
+norming_ws_11_19,585,,1,65736,http://webcdi.stanford.edu/form/fill/8dd6c4d42566d32477af69473cc7757a12bf8448499dfad1b85bcb047f359e35,TRUE,TRUE,2020-01-04 18:43:39.263900+00:00,2019-12-21 19:12:10.771583+00:00,2019-12-21 18:43:39.264386+00:00,21,Male,701**,1 (First),9.5,,0,,0,,,1995,16 (College graduate),1992,16,25000-50000,FALSE,['W'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,21,242,71,65,4,0,2,4,0,0,1,73,9,90,90,"She's calling me
+","I love milk
+","I gotta go potty
+"
+norming_ws_11_19,590,,1,65745,http://webcdi.stanford.edu/form/fill/29855b928ec2d381e0604748e6013a9426bc3cd3f1d0338843d7a95b8f9edb5f,TRUE,TRUE,2020-01-04 19:15:35.838753+00:00,2019-12-21 19:43:48.117114+00:00,2019-12-21 19:15:35.839256+00:00,16,Female,300**,5 (Fifth),5,,0,,0,,,1995,12 (High school graduate),1993,12,25000-50000,FALSE,['B'],Two parents,0,,,,,0,,0,,0,,0,,0,,0,,0,,16,106,70,74,0,0,2,3,6,2,0,35,0,85,85,"I ate cereal today
+",,

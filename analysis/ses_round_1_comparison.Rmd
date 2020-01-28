@@ -56,6 +56,8 @@ ses_pilot_raw <- readInWebCDI(ses_pilot_directory)
 ses_round_1_wg <- readInWebCDI(ses_round_1_wg_path)
 ses_round_1_ws <- readInWebCDI(ses_round_1_ws_path)
 
+
+
 ```
 
 Great, now the data is read in. We need to filter out participants now based on several criteria: birth weight, exposure to languages other than English, people who did the study too quickly.
@@ -142,12 +144,15 @@ ses_round_1_ws <- ses_round_1_ws %>% getCompletionInterval
 completion_times_round_1 <- 
   rbind(
     ses_round_1_wg %>% 
-      select(study_name, subject_id, completion_time) %>% 
+      select(study_name, subject_id, completion_time, age) %>% 
       mutate(study_name = "wg"),
     ses_round_1_ws %>% 
-      select(study_name, subject_id, completion_time) %>% 
+      select(study_name, subject_id, completion_time, age) %>% 
       mutate(study_name = "ws")
-  ) 
+  )
+
+summary(completion_times_round_1)
+View(completion_times_round_1 %>% arrange(completion_time))
 
 completion_times_round_1 %>% 
   ggplot(aes(completion_time)) +
@@ -160,6 +165,118 @@ completion_times_round_1 %>%
 
 ```
 
-Well, that looks like a problem...
+Well, that looks like a problem...let's look into ages...
+
+```{r}
+
+completion_times_round_1 %>% 
+  ggplot(aes(age, completion_time)) +
+  geom_jitter(position = position_jitter(width = 0.2, height = 0), alpha = 0.6) + 
+  coord_cartesian(ylim = c(0, 120))
+
+```
+
+
+Still looks weird. Let's look into the last experiment...
+
+```{r}
+
+View(ses_pilot_raw %>% getCompletionInterval() %>% arrange(completion_time))
+
+ses_pilot_raw %>% 
+  getCompletionInterval() %>% 
+  ggplot(aes(completion_time)) +
+  geom_histogram(binwidth = 2) +
+  coord_cartesian(xlim = c(0, 50))
+
+```
+
+Significantly less bad, which is weird. Let's look into demographics for the newer set.
+
+```{r}
+
+getEthnicities <- function(data) {
+  clean_data <- 
+    data %>% 
+    mutate( #get rid of brackets in ethnicity column
+      child_ethnicity = str_replace_all(child_ethnicity, "[^[:upper:]]", "")
+    ) %>% 
+    mutate(
+      ethnicity_white = str_detect(child_ethnicity, "W"),
+      ethnicity_black = str_detect(child_ethnicity, "B"),
+      ethnicity_asian = str_detect(child_ethnicity, "A"),
+      ethnicity_native = str_detect(child_ethnicity, "N"),
+      ethnicity_other = str_detect(child_ethnicity, "O"),
+      ethnicity_mixed = str_length(child_ethnicity) > 1
+    )
+
+  old_ethnicity_numbers <- 
+   tibble(
+      ethnicity = c("Asian", "Black", "Mixed", "White"),
+      `2007 manual` = c(.069, .105, .063, .733)
+    )
+  
+  clean_data <- 
+    clean_data %>% 
+    mutate( #get rid of brackets in ethnicity column
+      child_ethnicity = str_replace_all(child_ethnicity, "[^[:upper:]]", "")
+    ) %>%
+    mutate(
+      ethnicity = case_when(
+        str_length(child_ethnicity) > 1 ~ "mixed",
+        TRUE ~ child_ethnicity
+      ) %>% fct_recode(
+        Asian = "A",
+        Black = "B",
+        Mixed = "mixed",
+        White = "W"
+      )
+    ) %>% 
+    filter(ethnicity != "") %>% 
+    select(subject_id, child_ethnicity, ethnicity) %>% 
+    count(ethnicity) %>% 
+    mutate(`Current study` = n / sum(n)) %>% 
+    left_join(
+      old_ethnicity_numbers,
+      by = c("ethnicity")
+    ) %>% 
+    pivot_longer(
+      cols = c(`Current study`, `2007 manual`),
+      names_to = "study",
+      values_to = "proportion"
+    )
+  
+  return(clean_data)
+}
+
+ses_round_1_wg %>%
+  getEthnicities() %>% 
+  ggplot(aes(ethnicity, proportion, fill = study)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Ethnicity",
+    y = "Proportion of respondents",
+    title = "Current WG compared to 2007 manual",
+    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nbut does not exclude kids whose parents filled out the survey too quickly"
+  ) +
+  theme_few() +
+  theme(legend.title = element_blank()) 
+
+ses_round_1_ws %>%
+  getEthnicities() %>% 
+  ggplot(aes(ethnicity, proportion, fill = study)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Ethnicity",
+    y = "Proportion of respondents",
+    title = "Current WS compared to 2007 manual",
+    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nbut does not exclude kids whose parents filled out the survey too quickly"
+  ) +
+  theme_few() +
+  theme(legend.title = element_blank())  
+
+
+
+```
 
 
