@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 library(tidyverse)
 library(png)
@@ -26,7 +26,7 @@ library(lubridate)
 source(path(here::here(), "file_paths.R"))
 ```
 
-Our aim here is to take a closer look at the data obtained in the latest round of WebCDI data collection. We will specifically be conmparing this batch to the initial data we collected when first using Facebook to diversify the sample. This code will have a lot of unnecessary redundancy with `ses_pilot_1.Rmd` but everyone will just have to deal with it.
+Our aim here is to take a closer look at the data obtained in the latest round of WebCDI data collection. This code has a lot of terrible style and redundancy. Sorry everyone.
 
 ```{r}
 #accepts: path to directory of WebCDI summary score files
@@ -52,21 +52,59 @@ readInWebCDI <- function(directory) {
     return(clean_data)
 }
 
-ses_pilot_raw <- readInWebCDI(ses_pilot_directory)
-ses_round_1_wg <- readInWebCDI(ses_round_1_wg_path)
-ses_round_1_ws <- readInWebCDI(ses_round_1_ws_path)
+readInWebCdiSummary <- function(summary_df) {
+  clean_data <- 
+    read_csv(summary_df, col_types = cols(.default = col_character())) %>% 
+    mutate_at(
+      .funs = ~case_when(
+        str_detect(., "<") ~ 1, #get rid of entries that have 'less than' signs in them
+        TRUE ~ as.numeric(.)
+      ),
+      .vars = vars(contains("Percentile"))
+    ) %>% 
+    mutate_at(
+      .funs = ~as.numeric(.), #turn all the quantitative columns back into numeric
+      .vars = 
+       vars(
+          which(colnames(.) == "benchmark age"):ncol(.)
+        )
+    )
+}
 
+ses_pilot_raw <- readInWebCdiSummary(ses_pilot_wg)
+ses_round_1_wg_raw <-  readInWebCdiSummary(ses_round_1_aggregated_wg)
+ses_round_1_ws_raw <-  readInWebCdiSummary(ses_round_1_aggregated_ws)
 
+pilot_n <- ses_pilot_raw %>% nrow()
+ses_round_1_wg_n <- ses_round_1_wg_raw %>% nrow()
+ses_round_1_ws_n <- ses_round_1_ws_raw %>% nrow()
+
+total_n <- pilot_n + ses_round_1_wg_n + ses_round_1_ws_n
+
+ses_pilot_raw_completed <- ses_pilot_raw %>% filter(completed == TRUE)
+ses_wg_raw_completed <- ses_round_1_wg_raw %>% filter(completed == TRUE)
+ses_ws_raw_completed <- ses_round_1_ws_raw %>% filter(completed == TRUE)
+
+pilot_n_completed <- ses_pilot_raw_completed %>% nrow()
+ses_round_1_wg_n_completed <- ses_wg_raw_completed %>% nrow()
+ses_round_1_ws_n_completed <- ses_ws_raw_completed %>% nrow()
+
+total_completed_n <- 
+  nrow(ses_pilot_raw_completed) +
+  nrow(ses_wg_raw_completed) +
+  nrow(ses_ws_raw_completed)
 
 ```
 
-Great, now the data is read in. We need to filter out participants now based on several criteria: birth weight, exposure to languages other than English, people who did the study too quickly.
+The total amount of participants who created records (i.e., clicked the Facebook link across all three studies) was `r total_n`; the total amount of participants who completed the survey was `r total_completed_n`.
 
-First let's do the kids who were born prematurely or underweight:
+##Exclusions
+
+Here we report on how many participants were excluded from the sample for various reasons.
 
 ```{r}
 
-filterMultilingual <- function(data) {
+filterBirthweight <- function(data) {
   clean_data <- 
     data %>% 
     mutate_at(
@@ -86,16 +124,6 @@ filterMultilingual <- function(data) {
   return(clean_data)
 }
 
-ses_pilot_raw <- ses_pilot_raw %>% filterMultilingual()
-ses_round_1_wg <- ses_round_1_wg %>% filterMultilingual()
-ses_round_1_ws <- ses_round_1_ws %>% filterMultilingual()
-
-```
-
-Now let's do kids who got a lot of exposure to languages other than English:
-
-```{r}
-
 filterMultilingual <- function(data) {
   clean_data <- 
     data %>% 
@@ -109,24 +137,160 @@ filterMultilingual <- function(data) {
     filter(is.na(language_hours_per_week) | language_hours_per_week <= 16)
 }
 
-ses_pilot_raw <- ses_pilot_raw %>% filterMultilingual()
-ses_round_1_wg <- ses_round_1_wg %>% filterMultilingual()
-ses_round_1_ws <- ses_round_1_ws %>% filterMultilingual()
+filterVision <- function(data) {
+  clean_data <- 
+    data %>% 
+    filter(
+      hearing_loss_boolean != "1" | is.na(hearing_loss_boolean),
+      vision_problems_boolean != "1" | is.na(vision_problems_boolean)
+    )
+  
+  return(clean_data)
+}
 
 
 ```
 
-
-Now let's take care of the issue that some parents filled out the survey way too fast.
+### Filtering out participants because of birthweight and premature births.
 
 ```{r}
 
-ses_round_1_wg %>% 
-  mutate(
-    completion_interval = lubridate::interval(created_date, last_modified),
-    completion_time = completion_interval / lubridate::minutes()
-  )
 
+ses_pilot_birthweights <- 
+  ses_pilot_raw_completed %>% 
+  filterBirthweight()
+
+ses_pilot_birthweights_loss <- pilot_n_completed - nrow(ses_pilot_birthweights)
+
+ses_round_1_wg_birthweights <- 
+  ses_wg_raw_completed %>% 
+  filterBirthweight() 
+
+ses_round_1_wg_birthweights_loss <- 
+  ses_round_1_wg_n_completed - nrow(ses_round_1_wg_birthweights)
+
+ses_round_1_ws_birthweights <- 
+  ses_ws_raw_completed %>% 
+  filterBirthweight() 
+
+ses_round_1_ws_birthweights_loss <- 
+  ses_round_1_ws_n_completed - nrow(ses_round_1_ws_birthweights)
+
+total_birthweight_loss <- 
+  ses_pilot_birthweights_loss +
+  ses_round_1_wg_birthweights_loss +
+  ses_round_1_ws_birthweights_loss
+  
+
+```
+
+
+### Filtering out participants due to multilingual home environments.
+
+```{r}
+ses_pilot_multi <- 
+  ses_pilot_raw_completed %>% 
+  filterMultilingual()
+
+ses_pilot_multi_loss <- pilot_n_completed - nrow(ses_pilot_multi)
+
+ses_round_1_wg_multi <- 
+  ses_wg_raw_completed %>% 
+  filterMultilingual() 
+
+ses_round_1_wg_multi_loss <- 
+  ses_round_1_wg_n_completed - nrow(ses_round_1_wg_multi)
+
+ses_round_1_ws_multi <- 
+  ses_ws_raw_completed %>% 
+  filterMultilingual() 
+
+ses_round_1_ws_multi_loss <- 
+  ses_round_1_ws_n_completed - nrow(ses_round_1_ws_multi)
+
+total_multi_loss <- 
+  ses_pilot_multi_loss +
+  ses_round_1_wg_multi_loss +
+  ses_round_1_ws_multi_loss
+```
+
+
+### Filtering out participants due to hearing and/or vision loss.
+
+```{r}
+
+ses_pilot_vision <- 
+  ses_pilot_raw_completed %>% 
+  filterVision()
+
+ses_pilot_vision_loss <- pilot_n_completed - nrow(ses_pilot_vision)
+
+ses_round_1_wg_vision <- 
+  ses_wg_raw_completed %>% 
+  filterVision() 
+
+ses_round_1_wg_vision_loss <- 
+  ses_round_1_wg_n_completed - nrow(ses_round_1_wg_vision)
+
+ses_round_1_ws_vision <- 
+  ses_ws_raw_completed %>% 
+  filterVision() 
+
+ses_round_1_ws_vision_loss <- 
+  ses_round_1_ws_n_completed - nrow(ses_round_1_ws_vision)
+
+total_vision_loss <- 
+  ses_pilot_vision_loss +
+  ses_round_1_wg_vision_loss +
+  ses_round_1_ws_vision_loss
+
+```
+
+```{r}
+
+ses_pilot <- 
+  ses_pilot_raw %>%
+  filter(completed == TRUE) %>% 
+  filterBirthweight() %>% 
+  filterMultilingual() %>% 
+  filterMultilingual()
+
+ses_pilot_total_loss <- pilot_n_completed - nrow(ses_pilot)
+
+ses_wg <- 
+  ses_round_1_wg_raw %>% 
+  filter(completed == TRUE) %>% 
+  filterBirthweight() %>% 
+  filterMultilingual() %>% 
+  filterMultilingual()
+
+ses_wg_total_loss <- ses_round_1_wg_n_completed - nrow(ses_wg)
+
+ses_ws <- 
+  ses_round_1_ws_raw %>% 
+  filter(completed == TRUE) %>% 
+  filterBirthweight() %>% 
+  filterMultilingual() %>% 
+  filterMultilingual()
+
+ses_ws_total_loss <- ses_round_1_ws_n_completed - nrow(ses_ws)
+
+total_loss <- 
+  ses_pilot_total_loss +
+  ses_wg_total_loss +
+  ses_ws_total_loss
+
+```
+
+
+### Exclusion because of biological/environmental factors
+
+After only considering participants who finished the survey, `r total_birthweight_loss` participants were excluded from the sample due to self-reported premature birth or low birthweight. An additional `r total_multi_loss` participants were excluded because of self-reported exposure to more than 16 hours per week of a language other than English, and `r_vision_loss` participants were excluded due to self-reported vision or hearing problems in their children.
+
+In sum, `r total_loss` participants were excluded because of biological or environmental factors.
+
+
+```{r}
 getCompletionInterval <- function(data) {
   clean_data <- 
     data %>% 
@@ -138,60 +302,152 @@ getCompletionInterval <- function(data) {
   return(clean_data)
 }
 
-ses_round_1_wg <- ses_round_1_wg %>% getCompletionInterval
-ses_round_1_ws <- ses_round_1_ws %>% getCompletionInterval
 
-completion_times_round_1 <- 
-  rbind(
-    ses_round_1_wg %>% 
-      select(study_name, subject_id, completion_time, age) %>% 
-      mutate(study_name = "wg"),
-    ses_round_1_ws %>% 
-      select(study_name, subject_id, completion_time, age) %>% 
-      mutate(study_name = "ws")
+pilot_ct_age_raw <- 
+  ses_pilot_raw_completed %>% 
+  getCompletionInterval() %>% 
+  select(subject_id, completion_time, `Words Understood`, age, study_name) %>% 
+  mutate(age = as.numeric(age), instrument = "WG") %>% 
+  rename(total = `Words Understood`) #change variable name so that we can bind with other df
+
+wg_ct_age_raw <- 
+  ses_wg_raw_completed %>% 
+  getCompletionInterval() %>% 
+  select(subject_id, completion_time, `Words Understood`, age, study_name) %>% 
+  mutate(age = as.numeric(age), instrument = "WG") %>% 
+  rename(total = `Words Understood`) #change variable name so that we can bind with other df
+
+ws_ct_age_raw <- 
+  ses_ws_raw_completed %>% 
+  getCompletionInterval() %>% 
+  select(subject_id, completion_time, `Total Produced`, age, study_name) %>% 
+  mutate(age = as.numeric(age), instrument = "WS") %>% 
+  rename(total = `Total Produced`)  #change variable name so that we can bind with other df
+
+aggregate_ct_age_raw_completed <- 
+  bind_rows(pilot_ct_age_raw, wg_ct_age_raw, ws_ct_age_raw) %>% 
+  mutate(
+    quick_completion = completion_time <= 6
+  ) %>% 
+  count(quick_completion)
+
+quick_completed_raw <- aggregate_ct_age_raw_completed %>% slice(2) %>% pull(n)
+
+normally_completed_raw <- 
+  aggregate_ct_age_raw_completed %>% 
+  slice(1) %>% 
+  pull(n)
+
+
+```
+
+Before any exclusions (other than those for completeness of the survey), `r quick_completed_raw` out of `r quick_completed_raw + normally_completed_raw` participants, or a proportion of `r (quick_completed_raw) / (normally_completed_raw + quick_completed_raw)` completed the survey too quickly. 
+
+Below, I show the same figures once accounting for the previously mentioned exclusion criteria. 
+
+```{r}
+pilot_ct_age <- 
+  ses_pilot %>% 
+  getCompletionInterval() %>% 
+  select(subject_id, completion_time, `Words Understood`, age, study_name) %>% 
+  mutate(age = as.numeric(age), instrument = "WG") %>% 
+  rename(total = `Words Understood`) #change variable name so that we can bind with other df
+
+wg_ct_age <- 
+  ses_wg %>% 
+  getCompletionInterval() %>% 
+  select(subject_id, completion_time, `Words Understood`, age, study_name) %>% 
+  mutate(age = as.numeric(age), instrument = "WG") %>% 
+  rename(total = `Words Understood`) #change variable name so that we can bind with other df
+
+ws_ct_age <- 
+  ses_ws %>% 
+  getCompletionInterval() %>% 
+  select(subject_id, completion_time, `Total Produced`, age, study_name) %>% 
+  mutate(age = as.numeric(age), instrument = "WS") %>% 
+  rename(total = `Total Produced`)  #change variable name so that we can bind with other df
+
+aggregate_ct_age_completed <- 
+  bind_rows(pilot_ct_age, wg_ct_age, ws_ct_age) %>% 
+  mutate(
+    quick_completion = completion_time <= 6
   )
 
-summary(completion_times_round_1)
-View(completion_times_round_1 %>% arrange(completion_time))
+aggregate_ct_age_count <- 
+  aggregate_ct_age_completed %>% 
+  count(quick_completion)
 
-completion_times_round_1 %>% 
+quick_completed <- aggregate_ct_age_count %>% slice(2) %>% pull(n)
+
+normally_completed <- 
+  aggregate_ct_age_count %>% 
+  slice(1) %>% 
+  pull(n)
+```
+
+When we *do* account for exclusions, the proportions change very slightly: `r quick_completed` out of `r quick_conmpleted + normally_completed`, or `r quick_completed / (quick_conmpleted + normally_completed)` of participants, completed the survey in 6 minutes or fewer, which is criteria for exclusion. Let's look a little bit at how completion time is related to age. 
+
+```{r}
+survey_maxes <- 
+  tibble(
+    instrument = c("WG", "WS"),
+    max = c(396, 680)
+  )
+
+aggregate_ct_age_completed %>% 
+  ggplot(aes(completion_time, total, color = age)) +
+  facet_wrap(~ study_name) +
+  geom_jitter(position = position_jitter(width = 0.1), alpha = 0.5) +
+  coord_cartesian(xlim = c(0, 100)) +
+  ggthemes::theme_few() +
+  scale_color_viridis_c() +
+  coord_cartesian(xlim = c(0, 60)) +
+  scale_x_continuous(breaks = seq(0, 60, 5)) +
+  labs(
+    x = "Minutes to completion",
+    y = "Total words produced (in WS) or understood (in WG)",
+    title = "Time to completion in total sample, WebCDI WG and WS",
+    subtitle = "Dotted line represents 6 minute mark"
+  ) +
+  geom_vline(xintercept = 6, linetype = "dotted")
+
+aggregate_ct_age_completed %>% 
   ggplot(aes(completion_time)) +
-  geom_histogram(position = "dodge", binwidth = 5) +
+  geom_histogram(position = "dodge", binwidth = 2) +
   facet_wrap(~study_name) +
   coord_cartesian(xlim = c(0, 60)) +
-  scale_x_continuous(breaks = seq(0, 60, 3))
+  theme_minimal()
 
-
+aggregate_ct_age_completed %>% 
+  mutate(age_bin = cut_interval(
+    age,
+    3,
+    labels = c("8 - 14 months", "15 - 21 months", "22 - 30 months")
+  )) %>% 
+  ggplot(aes(age_bin, completion_time)) +
+  geom_boxplot() +
+  geom_jitter(aes(color = study_name), alpha = 0.5) +
+  coord_cartesian(ylim = c(0, 60))
 
 ```
 
-Well, that looks like a problem...let's look into ages...
+
+It looks like parents of kids of all ages cheated the system here, unfortunately - no clear patter when looking at this boxplot. Let's look at some summary statistics:
 
 ```{r}
 
-completion_times_round_1 %>% 
-  ggplot(aes(age, completion_time)) +
-  geom_jitter(position = position_jitter(width = 0.2, height = 0), alpha = 0.6) + 
-  coord_cartesian(ylim = c(0, 120))
+aggregate_ct_age_completed %>% 
+  group_by(study_name) %>% 
+  summarize(
+    median_ct = median(completion_time),
+    mean_ct = mean(completion_time, na.rm = TRUE),
+    min_ct = min(completion_time),
+    max_ct = max(completion_time)
+  )
 
 ```
 
-
-Still looks weird. Let's look into the last experiment...
-
-```{r}
-
-View(ses_pilot_raw %>% getCompletionInterval() %>% arrange(completion_time))
-
-ses_pilot_raw %>% 
-  getCompletionInterval() %>% 
-  ggplot(aes(completion_time)) +
-  geom_histogram(binwidth = 2) +
-  coord_cartesian(xlim = c(0, 50))
-
-```
-
-Significantly less bad, which is weird. Let's look into demographics for the newer set.
+A lot of parents have been filling out this survey really quickly; let's toss out the ones who have filled it out in fewer than six minutes.
 
 ```{r}
 
@@ -271,6 +527,53 @@ ses_round_1_ws %>%
     y = "Proportion of respondents",
     title = "Current WS compared to 2007 manual",
     subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nbut does not exclude kids whose parents filled out the survey too quickly"
+  ) +
+  theme_few() +
+  theme(legend.title = element_blank())  
+
+
+
+
+
+```
+
+
+Now let's look at what happens to the ethnicities when we filter out the parents who did it too fast...
+
+```{r}
+
+ses_round_1_wg <- 
+  ses_round_1_wg %>% 
+  left_join(aggregate_ct_age, by = c("subject_id", "study_name")) %>% 
+  filter(quick_completion == FALSE)
+
+ses_round_1_ws <- 
+  ses_round_1_ws %>% 
+  left_join(aggregate_ct_age, by = c("subject_id", "study_name")) %>% 
+  filter(quick_completion == FALSE)
+
+ses_round_1_wg %>%
+  getEthnicities() %>% 
+  ggplot(aes(ethnicity, proportion, fill = study)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Ethnicity",
+    y = "Proportion of respondents",
+    title = "Current WG compared to 2007 manual",
+    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nas well as parents who did the survey too fast"
+  ) +
+  theme_few() +
+  theme(legend.title = element_blank()) 
+
+ses_round_1_ws %>%
+  getEthnicities() %>% 
+  ggplot(aes(ethnicity, proportion, fill = study)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Ethnicity",
+    y = "Proportion of respondents",
+    title = "Current WS compared to 2007 manual",
+    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nas well as parents who did the survey too fas"
   ) +
   theme_few() +
   theme(legend.title = element_blank())  
