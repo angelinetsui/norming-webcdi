@@ -81,6 +81,7 @@ ses_round_1_ws_n <- ses_round_1_ws_raw %>% nrow()
 
 total_n <- pilot_n + ses_round_1_wg_n + ses_round_1_ws_n
 
+#raw_completed denotes dfs that have data of only completed admins but aren't filtered for exclusions
 ses_pilot_raw_completed <- ses_pilot_raw %>% filter(completed == TRUE)
 ses_wg_raw_completed <- ses_round_1_wg_raw %>% filter(completed == TRUE)
 ses_ws_raw_completed <- ses_round_1_ws_raw %>% filter(completed == TRUE)
@@ -285,7 +286,7 @@ total_loss <-
 
 ### Exclusion because of biological/environmental factors
 
-After only considering participants who finished the survey, `r total_birthweight_loss` participants were excluded from the sample due to self-reported premature birth or low birthweight. An additional `r total_multi_loss` participants were excluded because of self-reported exposure to more than 16 hours per week of a language other than English, and `r_vision_loss` participants were excluded due to self-reported vision or hearing problems in their children.
+After only considering participants who finished the survey, `r total_birthweight_loss` participants were excluded from the sample due to self-reported premature birth or low birthweight. An additional `r total_multi_loss` participants were excluded because of self-reported exposure to more than 16 hours per week of a language other than English, and `r total_vision_loss` participants were excluded due to self-reported vision or hearing problems in their children.
 
 In sum, `r total_loss` participants were excluded because of biological or environmental factors.
 
@@ -358,7 +359,8 @@ wg_ct_age <-
   getCompletionInterval() %>% 
   select(subject_id, completion_time, `Words Understood`, age, study_name) %>% 
   mutate(age = as.numeric(age), instrument = "WG") %>% 
-  rename(total = `Words Understood`) #change variable name so that we can bind with other df
+  rename(total = `Words Understood`) %>%  #change variable name so that we can bind with other df
+  bind_rows(pilot_ct_age)
 
 ws_ct_age <- 
   ses_ws %>% 
@@ -385,7 +387,7 @@ normally_completed <-
   pull(n)
 ```
 
-When we *do* account for exclusions, the proportions change very slightly: `r quick_completed` out of `r quick_conmpleted + normally_completed`, or `r quick_completed / (quick_conmpleted + normally_completed)` of participants, completed the survey in 6 minutes or fewer, which is criteria for exclusion. Let's look a little bit at how completion time is related to age. 
+When we *do* account for exclusions, the proportions change very slightly: `r quick_completed` out of `r quick_completed + normally_completed`, or `r quick_completed / (quick_completed + normally_completed)` of participants, completed the survey in 6 minutes or fewer, which is criteria for exclusion. Let's look a little bit at how completion time is related to age. 
 
 ```{r}
 survey_maxes <- 
@@ -411,11 +413,69 @@ aggregate_ct_age_completed %>%
   ) +
   geom_vline(xintercept = 6, linetype = "dotted")
 
+wg_ct_age_cats <- 
+  wg_ct_age %>% 
+  filter(age > 7) %>% 
+  mutate(age_bin = cut_interval(
+    age,
+    3,
+    labels = c("8 - 11 months", "12 - 14 months", "15 - 18 months")
+  ))
+
+boxplot_annotations_wg <- 
+  wg_ct_age_cats %>% 
+  count(age_bin) %>% 
+  mutate(label = str_c("N = ", as.character(n)), completion_time = 65)
+
+wg_ct_age_cats %>% 
+  ggplot(aes(age_bin, completion_time)) +
+  geom_boxplot() + 
+  geom_jitter(aes(color = study_name), alpha = 0.5) +
+  geom_text(aes(label = label), data = boxplot_annotations_wg) +
+  coord_cartesian(ylim = c(0, 70)) +
+  ggthemes::theme_few() +
+  labs(
+    x = "Age bin",
+    y = "Time to completion (mins)",
+    title = "Aggregate completion time data across current WG studies",
+    color = "Study name"
+  )
+
+
+ws_ct_age_cats <- 
+  ws_ct_age %>% 
+  filter(age > 16) %>% 
+  mutate(age_bin = cut_interval(
+    age,
+    3,
+    labels = c("16 - 21 months", "22 - 25 months", "26 - 30 months")
+  ))
+
+boxplot_annotations_ws <- 
+  ws_ct_age_cats %>% 
+  count(age_bin) %>% 
+  mutate(label = str_c("N = ", as.character(n)), completion_time = 65)
+
+ws_ct_age_cats %>% 
+  ggplot(aes(age_bin, completion_time)) +
+  geom_boxplot() + 
+  geom_jitter(aes(color = study_name), alpha = 0.5) +
+  geom_text(aes(label = label), data = boxplot_annotations_ws) +
+  coord_cartesian(ylim = c(0, 70)) +
+  ggthemes::theme_few() +
+  labs(
+    x = "Age bin",
+    y = "Time to completion (mins)",
+    title = "Aggregate completion time data across current WS studies",
+    color = "Study name"
+  )  
+  
+
 aggregate_ct_age_completed %>% 
   ggplot(aes(completion_time)) +
   geom_histogram(position = "dodge", binwidth = 2) +
   facet_wrap(~study_name) +
-  coord_cartesian(xlim = c(0, 60)) +
+  coord_cartesian(xlim = c(0, 70)) +
   theme_minimal()
 
 aggregate_ct_age_completed %>% 
@@ -427,7 +487,14 @@ aggregate_ct_age_completed %>%
   ggplot(aes(age_bin, completion_time)) +
   geom_boxplot() +
   geom_jitter(aes(color = study_name), alpha = 0.5) +
-  coord_cartesian(ylim = c(0, 60))
+  coord_cartesian(ylim = c(0, 70)) +
+  ggthemes::theme_few() +
+  labs(
+    x = "Age bin",
+    y = "Time to completion (mins)",
+    title = "Aggregate completion time data across all current studies",
+    color = "Study name"
+  )  
 
 ```
 
@@ -447,9 +514,28 @@ aggregate_ct_age_completed %>%
 
 ```
 
+### Participant ethnicities and education levels
+
+A key goal of this project has been to diversify the sample of participants completing WebCDI.
+
 A lot of parents have been filling out this survey really quickly; let's toss out the ones who have filled it out in fewer than six minutes.
 
 ```{r}
+
+ses_pilot_time_filtered <- 
+  ses_pilot %>% 
+  getCompletionInterval() %>% 
+  filter(completion_time > 6)
+
+ses_wg_time_filtered <- 
+  ses_wg %>% 
+  getCompletionInterval() %>% 
+  filter(completion_time > 6)
+
+ses_ws_time_filtered <- 
+  ses_ws %>% 
+  getCompletionInterval() %>% 
+  filter(completion_time > 6)
 
 getEthnicities <- function(data) {
   clean_data <- 
@@ -505,81 +591,172 @@ getEthnicities <- function(data) {
   return(clean_data)
 }
 
-ses_round_1_wg %>%
-  getEthnicities() %>% 
+#df for ethnicity plot
+ses_wg_ethnicity <- 
+  ses_wg %>%
+  bind_rows(ses_pilot) %>% 
+  getCompletionInterval() %>% 
+  filter(completion_time > 6) %>% 
+  getEthnicities()
+
+ses_wg_ethnicity_n <- 
+  nrow(
+    ses_wg %>% 
+    bind_rows(ses_pilot) %>% 
+    getCompletionInterval() %>%  
+    filter(completion_time > 6)
+  ) 
+
+ses_wg_ethnicity %>% 
   ggplot(aes(ethnicity, proportion, fill = study)) +
   geom_col(position = "dodge") +
   labs(
     x = "Ethnicity",
     y = "Proportion of respondents",
-    title = "Current WG compared to 2007 manual",
-    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nbut does not exclude kids whose parents filled out the survey too quickly"
+    title = "Current Words and Gestures study compared to 2007 manual",
+    subtitle = "Excludes children who are prematurely born, are multilingual, were born underweight,\nhave vision or hearing loss, or who completed the survey in under 6 minutes"
   ) +
   theme_few() +
-  theme(legend.title = element_blank()) 
+  theme(legend.title = element_blank()) +
+  annotate(
+    "text",
+    label = str_c("N = ", ses_wg_ethnicity_n),
+    x = 3.5,
+    y = 0.85,
+    hjust = "center"
+  )
 
-ses_round_1_ws %>%
-  getEthnicities() %>% 
+ses_ws_ethnicity <- 
+  ses_ws %>% 
+  getCompletionInterval() %>% 
+  filter(completion_time > 6) %>% 
+  getEthnicities()
+
+ses_ws_ethnicity_n <- 
+  ses_ws %>%
+  getCompletionInterval() %>% 
+  filter(completion_time > 6) %>% 
+  nrow()
+  
+
+ses_ws_ethnicity %>% 
   ggplot(aes(ethnicity, proportion, fill = study)) +
   geom_col(position = "dodge") +
   labs(
     x = "Ethnicity",
     y = "Proportion of respondents",
     title = "Current WS compared to 2007 manual",
-    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nbut does not exclude kids whose parents filled out the survey too quickly"
+    subtitle = "Excludes children who are prematurely born, are multilingual, were born underweight,\nhave vision or hearing loss, or who completed the survey in under 6 minutes"
   ) +
   theme_few() +
-  theme(legend.title = element_blank())  
-
-
-
-
+  theme(legend.title = element_blank()) +
+  annotate(
+    "text",
+    label = str_c("N = ", ses_ws_ethnicity_n),
+    x = 2.0,
+    y = 0.85,
+    hjust = "center"
+  )
 
 ```
-
-
-Now let's look at what happens to the ethnicities when we filter out the parents who did it too fast...
 
 ```{r}
+getMaternalEd <- function(data) {
+  clean_data <- 
+    data %>% 
+    select(subject_id, mother_education, study_name) %>% 
+    mutate(
+      maternal_ed = case_when(
+        mother_education <= 11 ~ "Some high school or less",
+        mother_education == 12 ~ "High school diploma",
+        mother_education %in% seq.int(13, 15) ~ 
+          "Some college education",
+        mother_education >= 16 ~ "College diploma or more"
+      )
+    )
+}
 
-ses_round_1_wg <- 
-  ses_round_1_wg %>% 
-  left_join(aggregate_ct_age, by = c("subject_id", "study_name")) %>% 
-  filter(quick_completion == FALSE)
+aggregate_maternal_ed <- 
+  bind_rows(
+    ses_pilot_time_filtered %>% getMaternalEd(),
+    ses_wg_time_filtered %>% getMaternalEd(),
+    ses_ws_time_filtered %>% getMaternalEd()
+  )
 
-ses_round_1_ws <- 
-  ses_round_1_ws %>% 
-  left_join(aggregate_ct_age, by = c("subject_id", "study_name")) %>% 
-  filter(quick_completion == FALSE)
+old_props <- 
+  tibble(
+    maternal_ed = c(
+      "Some high school or less",
+      "High school diploma",
+      "Some college education",
+      "College diploma or more"
+    ),
+    study_name = "2007 manual",
+    `Study proportion` = c(.075, .2385, .248, .4385)
+  )
 
-ses_round_1_wg %>%
-  getEthnicities() %>% 
-  ggplot(aes(ethnicity, proportion, fill = study)) +
+aggregate_maternal_ed %>% 
+  count(maternal_ed, study_name) %>% 
+  group_by(study_name) %>% 
+  mutate(
+    `Study proportion` = n / sum(n)
+  ) %>% 
+  select(-n) %>% 
+  bind_rows(old_props) %>% 
+  mutate(
+    maternal_ed = fct_relevel(
+      maternal_ed,
+      "Some high school or less",
+      "High school diploma",
+      "Some college education",
+      "College diploma or more"
+    )
+  ) %>% 
+  ggplot(aes(maternal_ed, `Study proportion`, fill = `study_name`)) +
   geom_col(position = "dodge") +
   labs(
-    x = "Ethnicity",
-    y = "Proportion of respondents",
-    title = "Current WG compared to 2007 manual",
-    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nas well as parents who did the survey too fast"
+    x = "Education Level",
+    y = "Proportion of respondents"
   ) +
   theme_few() +
-  theme(legend.title = element_blank()) 
+  theme(
+    legend.title = element_blank(),
+    axis.text.x = element_text(angle = 10, vjust = 0.9, hjust = 1, size = 8),
+    axis.title.x = element_text()
+  ) 
 
-ses_round_1_ws %>%
-  getEthnicities() %>% 
-  ggplot(aes(ethnicity, proportion, fill = study)) +
+aggregate_maternal_ed %>% 
+  count(maternal_ed) %>% 
+  mutate(
+    study_name = "Current studies",
+    `Study proportion` = n / sum(n)
+  ) %>% 
+  select(-n) %>% 
+  bind_rows(old_props) %>% 
+  mutate(
+    maternal_ed = fct_relevel(
+      maternal_ed,
+      "Some high school or less",
+      "High school diploma",
+      "Some college education",
+      "College diploma or more"
+    )
+  ) %>% 
+  ggplot(aes(maternal_ed, `Study proportion`, fill = `study_name`)) +
   geom_col(position = "dodge") +
   labs(
-    x = "Ethnicity",
-    y = "Proportion of respondents",
-    title = "Current WS compared to 2007 manual",
-    subtitle = "Excludes kids who are prematurely born, are multilingual or were born underweight,\nas well as parents who did the survey too fas"
+    x = "Education Level",
+    y = "Proportion of respondents"
   ) +
   theme_few() +
-  theme(legend.title = element_blank())  
-
-
-
+  theme(
+    legend.title = element_blank(),
+    axis.text.x = element_text(angle = 10, vjust = 0.9, hjust = 1, size = 8),
+    axis.title.x = element_text()
+  ) 
 ```
+
+
+### Word production and comprehension (filtered datasets)
 
 
