@@ -759,4 +759,31 @@ aggregate_maternal_ed %>%
 
 ### Word production and comprehension (filtered datasets)
 
+#### Maternal education and production and comprehension
+
+Here, we take a closer look at production and comprehension data as they relate to maternal education of child participants.
+
+```{r}
+
+all_wg_time_filtered <-
+  ses_pilot_time_filtered %>% 
+  bind_rows(ses_wg_time_filtered)
+  
+
+
+wg_maternal_ed <- 
+  bind_rows(
+    ses_pilot_time_filtered %>% getMaternalEd(),
+    ses_wg_time_filtered %>% getMaternalEd()
+  ) %>% 
+  left_join(
+    all_wg_time_filtered %>% 
+      select(subject_id, study_name, age, `Words Understood`, `Words Produced`),
+    by = c("study_name", "subject_id")
+  ) %>% 
+  mutate_at()
+
+```
+
+
 
