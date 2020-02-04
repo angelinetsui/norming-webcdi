@@ -768,6 +768,7 @@ Here, we take a closer look at production and comprehension data as they relate 
 all_wg_time_filtered <-
   ses_pilot_time_filtered %>% 
   bind_rows(ses_wg_time_filtered)
+
   
 
 
@@ -781,9 +782,77 @@ wg_maternal_ed <-
       select(subject_id, study_name, age, `Words Understood`, `Words Produced`),
     by = c("study_name", "subject_id")
   ) %>% 
-  mutate_at()
+  mutate_at(
+    .funs = ~case_when(
+        is.na(.) ~ 0, #get rid of entries that have 'less than' signs in them
+        TRUE ~ as.numeric(.)
+      ),
+      .vars = vars(contains("Words"))
+  ) %>% 
+  mutate(
+    age = as.numeric(age),
+    maternal_ed = fct_relevel(
+      .f = maternal_ed,
+      c(
+        "Some high school or less",
+        "High school diploma",
+        "Some college education",
+        "College diploma or more"
+      )
+    )
+  )
+
+ws_maternal_ed <- 
+  ses_ws_time_filtered %>% 
+  getMaternalEd() %>% 
+  left_join(
+    ses_ws_time_filtered %>% 
+      select(subject_id, study_name, age, `Total Produced`),
+    by = c("study_name", "subject_id")
+  ) %>% 
+  mutate_at(
+    .funs = ~case_when(
+        is.na(.) ~ 0, #get rid of entries that have 'less than' signs in them
+        TRUE ~ as.numeric(.)
+      ),
+      .vars = vars(contains("Words"))
+  ) %>% 
+  mutate(
+    age = as.numeric(age),
+    maternal_ed = fct_relevel(
+      .f = maternal_ed,
+      c(
+        "Some high school or less",
+        "High school diploma",
+        "Some college education",
+        "College diploma or more"
+      )
+    )
+  )
+
+wg_maternal_ed %>% 
+  ggplot(aes(age, `Words Understood`, color = maternal_ed)) +
+  geom_jitter(position = position_jitter(width = 0.1, height = 0)) +
+  geom_smooth(method = "lm", level = .9) +
+  coord_cartesian(ylim = c(-20, 420)) +
+  ggthemes::theme_few() + 
+  labs(title = "Age and words understood, WG")
+
+wg_maternal_ed %>% 
+  ggplot(aes(age, `Words Produced`, color = maternal_ed)) +
+  geom_jitter(position = position_jitter(width = 0.1, height = 0)) +
+  geom_smooth(method = "lm", level = .9) +
+  ggthemes::theme_few() + 
+  labs(title = "Age and words produced, WG")
+
+ws_maternal_ed %>% 
+  ggplot(aes(age, `Total Produced`, color = maternal_ed)) +
+  geom_jitter(position = position_jitter(width = 0.1, height = 0)) +
+  geom_smooth(method = "lm", level = .9) +
+  ggthemes::theme_few() + 
+  labs(title = "Age and words produced, WG")
+  
+  
 
 ```
-
-
 
