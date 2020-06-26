@@ -48,4 +48,13 @@ ses_pilot_wg <-
     "norming_pilot_wg_6_19_summary.csv"
   )
 
+ses_round_4 <- 
+  fs::path(
+    project_root,
+    "data",
+    "raw",
+    "ses_round_4_april",
+    "ws_april_2020_summary.csv"
+  )
+
 

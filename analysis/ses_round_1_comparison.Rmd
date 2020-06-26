@@ -254,7 +254,7 @@ ses_pilot <-
   filter(completed == TRUE) %>% 
   filterBirthweight() %>% 
   filterMultilingual() %>% 
-  filterMultilingual()
+  filterVision()
 
 ses_pilot_total_loss <- pilot_n_completed - nrow(ses_pilot)
 
@@ -263,7 +263,7 @@ ses_wg <-
   filter(completed == TRUE) %>% 
   filterBirthweight() %>% 
   filterMultilingual() %>% 
-  filterMultilingual()
+  filterVision()
 
 ses_wg_total_loss <- ses_round_1_wg_n_completed - nrow(ses_wg)
 
@@ -272,7 +272,7 @@ ses_ws <-
   filter(completed == TRUE) %>% 
   filterBirthweight() %>% 
   filterMultilingual() %>% 
-  filterMultilingual()
+  filterVision()
 
 ses_ws_total_loss <- ses_round_1_ws_n_completed - nrow(ses_ws)
 
@@ -566,30 +566,48 @@ getEthnicities <- function(data) {
     mutate(
       ethnicity = case_when(
         str_length(child_ethnicity) > 1 ~ "mixed",
+        child_ethnicity != "A" & child_ethnicity != "B" & child_ethnicity != "W" ~ "other" ,
         TRUE ~ child_ethnicity
       ) %>% fct_recode(
         Asian = "A",
         Black = "B",
         Mixed = "mixed",
-        White = "W"
+        White = "W",
+        Other = "other"
       )
     ) %>% 
     filter(ethnicity != "") %>% 
     select(subject_id, child_ethnicity, ethnicity) %>% 
-    count(ethnicity) %>% 
-    mutate(`Current study` = n / sum(n)) %>% 
-    left_join(
-      old_ethnicity_numbers,
-      by = c("ethnicity")
-    ) %>% 
-    pivot_longer(
-      cols = c(`Current study`, `2007 manual`),
-      names_to = "study",
-      values_to = "proportion"
-    )
+    count(ethnicity)
   
   return(clean_data)
 }
+
+old_ethnicity_numbers <- 
+   tibble(
+      ethnicity = c("Asian", "Black", "Mixed", "White"),
+      `2007 manual` = c(.069, .105, .063, .733)
+    )
+
+total_proportions_ethnicity <- 
+  bind_rows(
+    ses_wg %>% getEthnicities() ,
+    ses_ws %>% getEthnicities(),
+    ses_pilot %>% getEthnicities()
+  ) %>% 
+  count(ethnicity, wt = n, name = "current_study") %>% 
+  mutate(proportion = prop.table(current_study)) %>% 
+  left_join(old_ethnicity_numbers, by = "ethnicity") %>% 
+  rename(
+    `Current study` = proportion
+  ) %>% 
+  filter(ethnicity != "Other") %>% 
+  select(-current_study) %>% 
+  pivot_longer(
+    cols = c(`Current study`, `2007 manual`),
+    names_to = "study",
+    values_to = "proportion"
+  )
 
 #df for ethnicity plot
 ses_wg_ethnicity <- 
@@ -607,7 +625,8 @@ ses_wg_ethnicity_n <-
     filter(completion_time > 6)
   ) 
 
-ses_wg_ethnicity %>% 
+ses_wg_ethnicity_plot <- 
+  ses_wg_ethnicity %>% 
   ggplot(aes(ethnicity, proportion, fill = study)) +
   geom_col(position = "dodge") +
   labs(
@@ -617,7 +636,11 @@ ses_wg_ethnicity %>%
     subtitle = "Excludes children who are prematurely born, are multilingual, were born underweight,\nhave vision or hearing loss, or who completed the survey in under 6 minutes"
   ) +
   theme_few() +
-  theme(legend.title = element_blank()) +
+  theme(
+    legend.title = element_blank(),
+    legend.position = "bottom",
+    axis.text = element_text(size = 10)
+  ) +
   annotate(
     "text",
     label = str_c("N = ", ses_wg_ethnicity_n),
@@ -639,26 +662,66 @@ ses_ws_ethnicity_n <-
   nrow()
   
 
-ses_ws_ethnicity %>% 
+# ses_ws_ethnicity %>% 
+#   ggplot(aes(ethnicity, proportion, fill = study)) +
+#   geom_col(position = "dodge") +
+#   labs(
+#     x = "Ethnicity",
+#     y = "Proportion of respondents",
+#     title = "Current WS compared to 2007 manual",
+#     subtitle = "Excludes children who are prematurely born, are multilingual, were born underweight,\nhave vision or hearing loss, or who completed the survey in under 6 minutes"
+#   ) +
+#   theme_few() +
+#   theme(legend.title = element_blank()) +
+#   annotate(
+#     "text",
+#     label = str_c("N = ", ses_ws_ethnicity_n),
+#     x = 2.0,
+#     y = 0.85,
+#     hjust = "center"
+#   )
+
+```
+
+
+
+```{r}
+#grant proposal plot of ethnicity
+
+grant_ethnicity_plot <-
+  total_proportions_ethnicity %>% 
   ggplot(aes(ethnicity, proportion, fill = study)) +
   geom_col(position = "dodge") +
   labs(
-    x = "Ethnicity",
-    y = "Proportion of respondents",
-    title = "Current WS compared to 2007 manual",
-    subtitle = "Excludes children who are prematurely born, are multilingual, were born underweight,\nhave vision or hearing loss, or who completed the survey in under 6 minutes"
+    y = "Proportion of\nrespondents",
+    title = "Pilot study: Ethnicity"
   ) +
   theme_few() +
-  theme(legend.title = element_blank()) +
-  annotate(
-    "text",
-    label = str_c("N = ", ses_ws_ethnicity_n),
-    x = 2.0,
-    y = 0.85,
-    hjust = "center"
+  theme(
+    legend.title = element_blank(),
+    legend.position = "none",
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 13),
+    legend.text = element_text(size = 13),
+    axis.title.x = element_blank(),
+    plot.title = element_text(size = 15)
   )
 
+grant_ethnicity_plot
+
+ggsave(
+  filename = "grant_ethnicity",
+  device = "jpeg",
+  path = fs::path(project_root, "plots"),
+  height = 2.7,
+  width = 4.5,
+  units = "in"
+)
+  
+  
 ```
+
+
 
 ```{r}
 getMaternalEd <- function(data) {
@@ -725,10 +788,17 @@ aggregate_maternal_ed %>%
     axis.title.x = element_text()
   ) 
 
+x_axis_labs <- c(
+  "Some high school\n or less",
+  "High school\ndiploma",
+  "Some college\neducation",
+  "College diploma\nor more"
+)
+
 aggregate_maternal_ed %>% 
   count(maternal_ed) %>% 
   mutate(
-    study_name = "Current studies",
+    study_name = "Current study",
     `Study proportion` = n / sum(n)
   ) %>% 
   select(-n) %>% 
@@ -746,14 +816,30 @@ aggregate_maternal_ed %>%
   geom_col(position = "dodge") +
   labs(
     x = "Education Level",
-    y = "Proportion of respondents"
+    y = "Proportion of\nrespondents",
+    title = "Pilot study: Maternal education"
   ) +
   theme_few() +
   theme(
     legend.title = element_blank(),
-    axis.text.x = element_text(angle = 10, vjust = 0.9, hjust = 1, size = 8),
-    axis.title.x = element_text()
-  ) 
+    axis.text.x = element_text(angle = 30, vjust = 0.9, hjust = 1, size = 13.5),
+    axis.title.x = element_blank(),
+    legend.position = "none",
+    legend.text = element_text(size = 13)
+  ) +
+  scale_x_discrete(labels = x_axis_labs)
+
+ggsave(
+  filename = "grant_maternal_ed",
+  device = "jpeg",
+  path = fs::path(project_root, "plots"),
+  height = 3.5,
+  width = 5.0,
+  units = "in"
+)
+  
+
+
 ```
 
 
@@ -860,56 +946,56 @@ ws_maternal_ed %>%
 
 ```{r}
 
-data("zipcode")
-
-zip_code_data <- read_csv(zip_code_path)
-
-
-all_zips <- 
-  bind_rows(
-    ses_pilot_raw %>% select(subject_id, zip_code),
-    ses_round_1_wg_raw %>% select(subject_id, zip_code),
-    ses_round_1_ws_raw %>% select(subject_id, zip_code)
-  ) %>% 
-  filter(!is.na(zip_code))
-
-ses_pilot_cities <- 
-  all_zips %>% 
-  mutate(zip_code = str_replace_all(zip_code, "[^[:digit:]]", "")) %>% 
-  mutate(zip_code = as.numeric(zip_code)) %>% 
-  left_join(
-    zip_code_data,
-    by = c("zip_code" = "prefix")
-  ) %>% 
-  select(subject_id, zip_code, region, city)
-
-ses_pilot_zips <- 
-  all_zips %>% 
-  mutate(zip_code = str_replace_all(zip_code, "[^[:digit:]]", "")) %>% 
-  left_join(
-    three_digit_avg,
-    by = c("zip_code" = "prefix")
-  ) %>% 
-  select(subject_id, mean_lat, mean_long)
-
-usa_center <- as.numeric(geocode("United States"))
-
-usa_map <- 
-  get_googlemap(center = usa_center, scale = 2, zoom = 4) %>% 
-  ggmap()
-
-usa_map
-
-usa_map +
-  geom_point(
-    aes(x = mean_long, y = mean_lat), 
-    data = ses_pilot_zips,
-    size = .7,
-    alpha = 0.7
-  )
-
-ses_pilot_zips %>% 
-  qmplot(x = mean_long, y = mean_lat)
+# data("zipcode")
+# 
+# zip_code_data <- read_csv(zip_code_path)
+# 
+# 
+# all_zips <- 
+#   bind_rows(
+#     ses_pilot_raw %>% select(subject_id, zip_code),
+#     ses_round_1_wg_raw %>% select(subject_id, zip_code),
+#     ses_round_1_ws_raw %>% select(subject_id, zip_code)
+#   ) %>% 
+#   filter(!is.na(zip_code))
+# 
+# ses_pilot_cities <- 
+#   all_zips %>% 
+#   mutate(zip_code = str_replace_all(zip_code, "[^[:digit:]]", "")) %>% 
+#   mutate(zip_code = as.numeric(zip_code)) %>% 
+#   left_join(
+#     zip_code_data,
+#     by = c("zip_code" = "prefix")
+#   ) %>% 
+#   select(subject_id, zip_code, region, city)
+# 
+# ses_pilot_zips <- 
+#   all_zips %>% 
+#   mutate(zip_code = str_replace_all(zip_code, "[^[:digit:]]", "")) %>% 
+#   left_join(
+#     three_digit_avg,
+#     by = c("zip_code" = "prefix")
+#   ) %>% 
+#   select(subject_id, mean_lat, mean_long)
+# 
+# usa_center <- as.numeric(geocode("United States"))
+# 
+# usa_map <- 
+#   get_googlemap(center = usa_center, scale = 2, zoom = 4) %>% 
+#   ggmap()
+# 
+# usa_map
+# 
+# usa_map +
+#   geom_point(
+#     aes(x = mean_long, y = mean_lat), 
+#     data = ses_pilot_zips,
+#     size = .7,
+#     alpha = 0.7
+#   )
+# 
+# ses_pilot_zips %>% 
+#   qmplot(x = mean_long, y = mean_lat)
  
 ```
 
